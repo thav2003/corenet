@@ -52,20 +52,25 @@ export const authOptions: NextAuthOptions = {
           label: "Signature",
           type: "text",
         },
+        csrfToken: {
+          label: "CSRF Token",
+          type: "text",
+        },
       },
       async authorize(credentials) {
         try {
           const signinMessage = new SigninMessage(
             JSON.parse(credentials?.message || "{}")
           );
+
           const nextAuthUrl = new URL(process.env.NEXTAUTH_URL);
           if (signinMessage.domain !== nextAuthUrl.host) {
             return null;
           }
 
-          // if (signinMessage.nonce !== (await getCsrfToken({ req }))) {
-          //   return null;
-          // }
+          if (signinMessage.nonce !== credentials?.csrfToken) {
+            return null;
+          }
 
           const validationResult = await signinMessage.validate(
             credentials?.signature || ""
@@ -81,13 +86,14 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
+          console.log(existingWallet);
           if (!existingWallet) {
             // Store new wallet
             await prisma.wallet.create({
               data: {
                 address: signinMessage.publicKey,
-                createdAt: new Date().toUTCString(),
-                updatedAt: new Date().toUTCString(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
               },
             });
           }
@@ -95,7 +101,8 @@ export const authOptions: NextAuthOptions = {
           return {
             id: signinMessage.publicKey,
           };
-        } catch {
+        } catch (e) {
+          console.log(e);
           return null;
         }
       },
@@ -103,11 +110,11 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async session({ session, token }) {
-      session.publicKey = token.sub;
       if (session.user) {
         session.user.name = token.sub;
         session.user.image = `https://ui-avatars.com/api/?name=${token.sub}&background=random`;
         session.user.address = token.sub;
+        session.user.publicKey = token.sub;
       }
       return session;
     },
