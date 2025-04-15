@@ -47,7 +47,7 @@ const WalletContextProvider: FC<{
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <SessionProvider session={session} refetchInterval={0}>
+          <SessionProvider session={session} refetchInterval={5 * 60}>
             {children}
           </SessionProvider>
         </WalletModalProvider>

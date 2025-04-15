@@ -3,7 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import {
+  LAMPORTS_PER_SOL,
+  ParsedTransactionWithMeta,
+  PublicKey,
+} from "@solana/web3.js";
 import {
   Dialog,
   DialogContent,
@@ -43,6 +47,11 @@ const WalletConnection = () => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [balance, setBalance] = useState<number | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
+  const [transactions, setTransactions] = useState<ParsedTransactionWithMeta[]>(
+    []
+  );
+  const [loadingTransactions, setLoadingTransactions] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (!connection || !publicKey) {
@@ -53,6 +62,9 @@ const WalletConnection = () => {
       publicKey,
       (updatedAccountInfo) => {
         setBalance(updatedAccountInfo.lamports / LAMPORTS_PER_SOL);
+        (async () => {
+          await fetchTransactions();
+        })();
       },
       {
         commitment: "confirmed",
@@ -107,6 +119,35 @@ const WalletConnection = () => {
     }
   };
 
+  const fetchTransactions = async () => {
+    if (!publicKey || !connection) return;
+
+    try {
+      setLoadingTransactions(true);
+      const signatures = await connection.getSignaturesForAddress(
+        publicKey,
+        { limit: 5 },
+        "confirmed"
+      );
+
+      const txs = await Promise.all(
+        signatures.map((sig) =>
+          connection.getParsedTransaction(sig.signature, {
+            maxSupportedTransactionVersion: 0,
+          })
+        )
+      );
+
+      setTransactions(
+        txs.filter((tx): tx is ParsedTransactionWithMeta => tx !== null)
+      );
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setLoadingTransactions(false);
+    }
+  };
+
   const handleSignIn = async () => {
     try {
       if (!connected) {
@@ -144,6 +185,29 @@ const WalletConnection = () => {
     }
   }, [connected]);
 
+  useEffect(() => {
+    if (publicKey) {
+      fetchTransactions();
+    }
+  }, [publicKey]);
+
+  const getTransactionAmount = (tx: ParsedTransactionWithMeta) => {
+    if (!tx.meta || !publicKey) return null;
+
+    const preBalances = tx.meta.preBalances;
+    const postBalances = tx.meta.postBalances;
+    const accountIndex = tx.transaction.message.accountKeys.findIndex(
+      (key) => key.pubkey.toBase58() === publicKey.toBase58()
+    );
+
+    if (accountIndex === -1) return null;
+
+    const balanceChange =
+      (postBalances[accountIndex] - preBalances[accountIndex]) /
+      LAMPORTS_PER_SOL;
+    return balanceChange;
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <div className="flex items-center gap-2">
@@ -160,7 +224,11 @@ const WalletConnection = () => {
           </DialogTrigger>
         ) : (
           <>
-            <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+            <Drawer
+              open={drawerOpen}
+              direction={"right"}
+              onOpenChange={setDrawerOpen}
+            >
               <DrawerTrigger asChild>
                 <Button
                   variant="outline"
@@ -235,9 +303,68 @@ const WalletConnection = () => {
                         <h4 className="text-sm font-medium mb-2 text-gray-400">
                           Recent Activity
                         </h4>
-                        <div className="text-sm text-gray-500">
-                          No recent activity
-                        </div>
+                        {loadingTransactions ? (
+                          <div className="text-sm text-gray-500">
+                            Loading transactions...
+                          </div>
+                        ) : transactions.length > 0 ? (
+                          <div className="space-y-2">
+                            {transactions.map((tx) => (
+                              <div
+                                key={tx.transaction.signatures[0]}
+                                className="p-3 rounded-lg bg-black/50 border border-[#A374FF]/20 hover:border-[#A374FF] transition-all"
+                              >
+                                <div className="flex justify-between items-center">
+                                  <div className="flex items-center gap-2">
+                                    {(() => {
+                                      const amount = getTransactionAmount(tx);
+                                      if (amount === null) return null;
+                                      return (
+                                        <div
+                                          className={`text-sm ${
+                                            amount >= 0
+                                              ? "text-[#00FFA3]"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          {amount >= 0 ? "+" : ""}
+                                          {amount.toFixed(4)} SOL
+                                        </div>
+                                      );
+                                    })()}
+                                    <div className="text-sm text-gray-400">
+                                      Fee:{" "}
+                                      {(tx.meta?.fee || 0) / LAMPORTS_PER_SOL}{" "}
+                                      SOL
+                                    </div>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 hover:bg-[#A374FF]/10 hover:text-[#A374FF]"
+                                    onClick={() =>
+                                      window.open(
+                                        `https://explorer.solana.com/tx/${tx.transaction.signatures[0]}`,
+                                        "_blank"
+                                      )
+                                    }
+                                  >
+                                    <ExternalLink className="h-3 w-3 text-gray-400" />
+                                  </Button>
+                                </div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  {new Date(
+                                    tx.blockTime! * 1000
+                                  ).toLocaleString()}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-sm text-gray-500">
+                            No recent activity
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
