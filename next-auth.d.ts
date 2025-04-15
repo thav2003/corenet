@@ -12,11 +12,11 @@ declare module "next-auth/jwt" {
 // Extend the built-in session types
 declare module "next-auth" {
   interface Session {
-    publicKey?: string;
     user: {
       name?: string | null;
       image?: string | null;
       address?: string;
+      publicKey?: string;
     };
   }
 }
