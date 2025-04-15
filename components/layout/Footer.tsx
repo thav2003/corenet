@@ -12,16 +12,10 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <Image
-                src={Logo}
-                alt="SolAIForge"
-                width={32}
-                height={32}
-                priority
-              />
+              <Image src={Logo} alt="CoreNet" width={32} height={32} priority />
 
               <span className="text-xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-                SolAIForge
+                CoreNet
               </span>
             </div>
             <p className="text-gray-400 text-sm">
@@ -185,7 +179,7 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-[#A374FF]/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-gray-400 text-sm">
-              © 2025 SolAIForge. All rights reserved.
+              © 2025 CoreNet. All rights reserved.
             </div>
             <div className="flex gap-6 text-sm">
               <a
