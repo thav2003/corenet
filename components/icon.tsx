@@ -1,3 +1,3 @@
-import Logo from "@/app/logo.png";
+import Logo from "@/assets/logo.png";
 
 export { Logo };
