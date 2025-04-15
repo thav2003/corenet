@@ -4,8 +4,6 @@ import "./globals.css";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import WalletContextProvider from "@/providers/WalletContextProvider";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,12 +16,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SolAIForge",
-  description: "Create and manage your NFT collections with AI",
+  title: "CoreNet",
+  description:
+    "CoreNet ($CNET) is a decentralized Modular Compute platform operating on the Solana blockchain, utilizing the Modular Compute Protocol (MCP) to provide powerful, secure, and flexible computing capabilities. The project is designed to support AI Compute, ZK Compute, MEV Optimization, and complex blockchain data processing requirements. By combining cutting-edge technology with a decentralized model, CoreNet opens up opportunities for next-generation blockchain applications.",
   icons: {
-    icon: "./logo.png",
-    shortcut: "./logo.png",
-    apple: "./logo.png",
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
 };
 
@@ -39,11 +38,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <WalletContextProvider session={session}>
-          <div className="min-h-screen bg-background flex flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
+          {children}
         </WalletContextProvider>
       </body>
     </html>

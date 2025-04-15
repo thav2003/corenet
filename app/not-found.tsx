@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/icon";
 
 export default function NotFound() {
   return (
@@ -16,13 +17,7 @@ export default function NotFound() {
       <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-8">
-          <Image
-            src="/logo.png"
-            alt="SolAIForge"
-            width={48}
-            height={48}
-            priority
-          />
+          <Image src={Logo} alt="SolAIForge" width={48} height={48} priority />
           <span className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
             SolAIForge
           </span>
