@@ -19,6 +19,8 @@ import {
   Cpu,
   Coins,
   Terminal,
+  Brain,
+  Database,
 } from "lucide-react";
 import { mockTasks } from "../../mockTasks";
 import { CreateTaskButton } from "../../../../components/CreateTaskButton";
@@ -62,7 +64,19 @@ export default function TaskDetailsPage() {
           <h1 className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
             {task.name}
           </h1>
-          <p className="text-gray-300 text-sm mt-1">{task.type}</p>
+          <div className="flex items-center gap-4 mt-1">
+            <p className="text-gray-300 text-sm">{task.type}</p>
+            <div
+              className={`px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
+                task.mode === "prediction"
+                  ? "bg-[#00FFA3]/20 text-[#00FFA3]"
+                  : "bg-[#A374FF]/20 text-[#A374FF]"
+              }`}
+            >
+              <Brain className="h-4 w-4" />
+              <span className="capitalize">{task.mode}</span>
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <div
@@ -106,6 +120,37 @@ export default function TaskDetailsPage() {
             {task.details.endTime && (
               <div className="text-sm text-gray-300">
                 Completed: {new Date(task.details.endTime).toLocaleString()}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="bg-black/50 border-[#A374FF]/20">
+          <CardHeader>
+            <CardTitle className="text-lg text-white">Task Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Brain className="h-4 w-4 text-[#00E5FF]" />
+              <span className="text-sm text-gray-300">Model:</span>
+              <span className="text-sm text-white">{task.details.model}</span>
+            </div>
+            {task.details.dataset && (
+              <div className="flex items-center gap-2">
+                <Database className="h-4 w-4 text-[#00FFA3]" />
+                <span className="text-sm text-gray-300">Dataset:</span>
+                <span className="text-sm text-white">
+                  {task.details.dataset}
+                </span>
+              </div>
+            )}
+            {task.details.epochs && (
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-[#A374FF]" />
+                <span className="text-sm text-gray-300">Epochs:</span>
+                <span className="text-sm text-white">
+                  {task.details.epochs}
+                </span>
               </div>
             )}
           </CardContent>

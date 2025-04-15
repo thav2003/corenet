@@ -6,6 +6,10 @@ export interface TaskDetail {
   gpu: boolean;
   cost: number;
   logs: string[];
+  model: string;
+  // Dataset fields only required for inference mode
+  dataset?: string;
+  datasetSize?: number;
 }
 
 export interface Task {
@@ -13,6 +17,7 @@ export interface Task {
   name: string;
   model: string;
   type: string;
+  mode: "training" | "inference";
   status: "running" | "completed" | "queued" | "failed";
   progress: number;
   timeLeft: string;
@@ -24,8 +29,9 @@ export const mockTasks: Task[] = [
   {
     id: 1,
     name: "LLM Training",
-    model: "Image Classifier",
+    model: "GPT-3",
     type: "AI Compute",
+    mode: "training",
     status: "running",
     progress: 65,
     timeLeft: "2h 30m",
@@ -36,28 +42,24 @@ export const mockTasks: Task[] = [
       memory: 16,
       gpu: true,
       cost: 2.5,
+      model: "GPT-3",
       logs: [
         "Initializing model parameters...",
-        "Loading training data...",
         "Starting training loop...",
         "Epoch 1/10: Loss = 0.234",
         "Epoch 2/10: Loss = 0.198",
         "Epoch 3/10: Loss = 0.167",
         "Epoch 4/10: Loss = 0.145",
         "Epoch 5/10: Loss = 0.132",
-        "Epoch 6/10: Loss = 0.124",
-        "Epoch 7/10: Loss = 0.118",
-        "Epoch 8/10: Loss = 0.113",
-        "Epoch 9/10: Loss = 0.109",
-        "Epoch 10/10: Loss = 0.106",
       ],
     },
   },
   {
     id: 2,
     name: "Image Generation",
-    model: "Image Classifier",
+    model: "Stable Diffusion",
     type: "AI Compute",
+    mode: "inference",
     status: "completed",
     progress: 100,
     timeLeft: "Completed",
@@ -69,11 +71,13 @@ export const mockTasks: Task[] = [
       memory: 8,
       gpu: true,
       cost: 1.8,
+      model: "Stable Diffusion",
+      dataset: "Custom Images",
+      datasetSize: 1000,
       logs: [
-        "Initializing Stable Diffusion model...",
-        "Loading prompt: 'A futuristic cityscape with flying cars'",
-        "Generating image...",
-        "Applying style transfer...",
+        "Loading dataset: Custom Images...",
+        "Dataset loaded successfully",
+        "Generating images...",
         "Post-processing...",
         "Task completed successfully",
       ],
@@ -82,8 +86,9 @@ export const mockTasks: Task[] = [
   {
     id: 3,
     name: "Text Classification",
-    model: "Text Summarizer",
+    model: "BERT",
     type: "AI Compute",
+    mode: "inference",
     status: "queued",
     progress: 0,
     timeLeft: "Waiting",
@@ -93,14 +98,18 @@ export const mockTasks: Task[] = [
       memory: 4,
       gpu: false,
       cost: 0.5,
+      model: "BERT",
+      dataset: "IMDB Reviews",
+      datasetSize: 50000,
       logs: ["Task queued"],
     },
   },
   {
     id: 4,
     name: "ZK Proof Generation",
-    model: "Fraud Detector",
+    model: "Groth16",
     type: "ZK Compute",
+    mode: "training",
     status: "running",
     progress: 42,
     timeLeft: "1h 15m",
@@ -111,9 +120,9 @@ export const mockTasks: Task[] = [
       memory: 12,
       gpu: true,
       cost: 2.0,
+      model: "Groth16",
       logs: [
         "Initializing ZK circuit...",
-        "Loading witness data...",
         "Generating proof...",
         "Verifying proof...",
         "Proof generated successfully",
@@ -123,8 +132,9 @@ export const mockTasks: Task[] = [
   {
     id: 5,
     name: "Verification",
-    model: "Fraud Detector",
+    model: "Groth16",
     type: "ZK Compute",
+    mode: "inference",
     status: "completed",
     progress: 100,
     timeLeft: "Completed",
@@ -136,18 +146,22 @@ export const mockTasks: Task[] = [
       memory: 6,
       gpu: false,
       cost: 1.2,
+      model: "Groth16",
+      dataset: "Transaction Proofs",
+      datasetSize: 500,
       logs: [
-        "Loading proof...",
-        "Verifying proof...",
-        "Proof verified successfully",
+        "Loading proofs...",
+        "Verifying proofs...",
+        "All proofs verified successfully",
       ],
     },
   },
   {
     id: 6,
     name: "MEV Extraction",
-    model: "Fraud Detector",
+    model: "MEV-Bot",
     type: "MEV Optimization",
+    mode: "inference",
     status: "running",
     progress: 78,
     timeLeft: "45m",
@@ -158,6 +172,9 @@ export const mockTasks: Task[] = [
       memory: 10,
       gpu: true,
       cost: 1.8,
+      model: "MEV-Bot",
+      dataset: "Recent Transactions",
+      datasetSize: 10000,
       logs: [
         "Analyzing blockchain data...",
         "Identifying MEV opportunities...",
@@ -170,8 +187,9 @@ export const mockTasks: Task[] = [
   {
     id: 7,
     name: "Arbitrage Detection",
-    model: "Fraud Detector",
+    model: "Arbitrage-Bot",
     type: "MEV Optimization",
+    mode: "inference",
     status: "queued",
     progress: 0,
     timeLeft: "Waiting",
@@ -181,14 +199,18 @@ export const mockTasks: Task[] = [
       memory: 5,
       gpu: false,
       cost: 0.8,
+      model: "Arbitrage-Bot",
+      dataset: "Market Data",
+      datasetSize: 5000,
       logs: ["Task queued"],
     },
   },
   {
     id: 8,
     name: "Blockchain Data Analysis",
-    model: "Fraud Detector",
+    model: "Data-Analyzer",
     type: "Data Processing",
+    mode: "training",
     status: "running",
     progress: 23,
     timeLeft: "3h 45m",
@@ -199,12 +221,11 @@ export const mockTasks: Task[] = [
       memory: 8,
       gpu: false,
       cost: 1.5,
+      model: "Data-Analyzer",
       logs: [
-        "Connecting to blockchain node...",
-        "Fetching transaction data...",
-        "Processing transactions...",
-        "Analyzing patterns...",
-        "Generating insights...",
+        "Loading blockchain data...",
+        "Preprocessing transactions...",
+        "Training analysis model...",
       ],
     },
   },
@@ -213,6 +234,7 @@ export const mockTasks: Task[] = [
     name: "Transaction Pattern Recognition",
     model: "Fraud Detector",
     type: "Data Processing",
+    mode: "inference",
     status: "completed",
     progress: 100,
     timeLeft: "Completed",
@@ -224,6 +246,9 @@ export const mockTasks: Task[] = [
       memory: 6,
       gpu: false,
       cost: 1.0,
+      model: "Fraud Detector",
+      dataset: "Historical Transactions",
+      datasetSize: 100000,
       logs: [
         "Loading transaction data...",
         "Identifying patterns...",
