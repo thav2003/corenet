@@ -4,11 +4,11 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { Menu, Search } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import MobileNav from "@/components/layout/MobileNav";
 import WalletConnection from "../WalletConnection";
-import { Input } from "../ui/input";
+import { SearchBar } from "../SearchBar";
 import { Logo } from "../icon";
 
 const Header = () => {
@@ -26,16 +26,7 @@ const Header = () => {
         </div>
 
         <div className="flex flex-1 items-center ml-6">
-          <div className="w-full max-w-xl">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-              <Input
-                type="search"
-                placeholder="Search models..."
-                className="w-full bg-black/50 pl-8 h-9 backdrop-blur-sm border-[#A374FF]/20 focus:border-[#A374FF] focus:shadow-[0_0_15px_#A374FF40] transition-all text-gray-300 placeholder:text-gray-500"
-              />
-            </div>
-          </div>
+          <SearchBar />
         </div>
 
         <nav className="hidden gap-6 md:flex ml-6">
