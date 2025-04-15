@@ -1,20 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Logo } from "../icon";
 
 export default function MobileNav() {
   return (
     <div className="flex flex-col gap-4 py-4">
       <div className="mb-4">
         <Link href="/" className="flex items-center space-x-2">
-          <Image
-            src="/logo.png"
-            alt="SolAIForge"
-            width={32}
-            height={32}
-            priority
-          />
+          <Image src={Logo} alt="CoreNet" width={32} height={32} priority />
           <span className="font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-            SolAIForge
+            CoreNet
           </span>
         </Link>
       </div>
