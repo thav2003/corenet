@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useBlockchain } from "@/hooks/useBlockchain";
+// import { useBlockchain } from "@/hooks/useBlockchain";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Wallet, Bell, Shield, Cpu } from "lucide-react";
 
 export default function SettingsPage() {
-  const { connection } = useBlockchain();
+  // const { connection } = useBlockchain();
   const [settings, setSettings] = useState({
     notifications: {
       email: true,
