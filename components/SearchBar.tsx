@@ -89,7 +89,7 @@ export function SearchBar() {
         <Input
           type="search"
           placeholder="Search models..."
-          className="w-full bg-black/50 pl-8 h-9 backdrop-blur-sm border-[#A374FF]/20 focus:border-[#A374FF] focus:shadow-[0_0_15px_#A374FF40] transition-all text-gray-300 placeholder:text-gray-500"
+          className="w-full bg-white pl-8 h-9 backdrop-blur-sm border-[#A374FF]/20 focus:border-[#A374FF] focus:shadow-[0_0_15px_#A374FF40] transition-all text-black placeholder:text-gray-500"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
