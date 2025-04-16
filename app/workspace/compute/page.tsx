@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Cpu,
@@ -11,21 +11,16 @@ import {
   Gauge,
   BarChart3,
   Settings,
-  Plus,
   ArrowRight,
   Clock,
   CheckCircle2,
   AlertCircle,
   Filter,
-  SortAsc,
-  SortDesc,
   ChevronDown,
   ChevronUp,
-  X,
   Search,
   RefreshCw,
   Pause,
-  Play,
   Trash2,
   Download,
   Share2,
@@ -70,11 +65,46 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+
+// Types
+interface ComputeTask {
+  id: number;
+  name: string;
+  type: string;
+  status: "running" | "completed" | "queued" | "failed";
+  progress: number;
+  computeUnits: number;
+  memory: number;
+  gpu: boolean;
+  startTime: string | null;
+  estimatedEndTime: string | null;
+}
+
+interface ComputeResource {
+  total: number;
+  used: number;
+  tasks: number;
+  type: string;
+  description: string;
+  features: string[];
+  history: { time: string; value: number }[];
+}
+
+interface StatsCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  description: string;
+}
+
+interface ResourceCardProps {
+  resource: ComputeResource;
+  type: string;
+}
 
 // Mock data for compute resources
 const computeResources = {
@@ -165,7 +195,7 @@ const computeResources = {
 };
 
 // Mock data for active tasks
-const activeTasks = [
+const activeTasks: ComputeTask[] = [
   {
     id: 1,
     name: "LLM Training",
@@ -278,15 +308,14 @@ const activeTasks = [
 
 export default function ComputePage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [sortField, setSortField] = useState("name");
-  const [sortDirection, setSortDirection] = useState("asc");
-  const [selectedTask, setSelectedTask] = useState(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [isResourceDialogOpen, setIsResourceDialogOpen] = useState(false);
-  const [selectedResource, setSelectedResource] = useState(null);
+  const [selectedResource, setSelectedResource] =
+    useState<ComputeResource | null>(null);
   const [resourceAllocation, setResourceAllocation] = useState(0);
 
   // Filter and sort tasks
@@ -320,13 +349,13 @@ export default function ComputePage() {
         if (!a.startTime) return sortDirection === "asc" ? 1 : -1;
         if (!b.startTime) return sortDirection === "asc" ? -1 : 1;
         return sortDirection === "asc"
-          ? new Date(a.startTime) - new Date(b.startTime)
-          : new Date(b.startTime) - new Date(a.startTime);
+          ? new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+          : new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
       }
       return 0;
     });
 
-  const handleSort = (field) => {
+  const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -335,7 +364,7 @@ export default function ComputePage() {
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case "running":
         return <Clock className="h-4 w-4 text-[#00E5FF]" />;
@@ -348,7 +377,7 @@ export default function ComputePage() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "running":
         return "bg-[#00E5FF]/20 text-[#00E5FF]";
@@ -361,15 +390,15 @@ export default function ComputePage() {
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string | null) => {
     if (!dateString) return "Not started";
     const date = new Date(dateString);
     return date.toLocaleString();
   };
 
-  const ResourceCard = ({ resource, type }) => {
+  const ResourceCard = ({ resource, type }: ResourceCardProps) => {
     const usagePercentage = (resource.used / resource.total) * 100;
-    const getIcon = (type) => {
+    const getIcon = (type: string) => {
       switch (type) {
         case "aiCompute":
           return <Brain className="h-6 w-6 text-[#00E5FF]" />;
@@ -458,7 +487,7 @@ export default function ComputePage() {
     );
   };
 
-  const StatsCard = ({ title, value, icon, description }) => (
+  const StatsCard = ({ title, value, icon, description }: StatsCardProps) => (
     <Card className="bg-black/50 border-[#A374FF]/20">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
@@ -479,7 +508,7 @@ export default function ComputePage() {
     </Card>
   );
 
-  const ResourceChart = ({ resource }) => {
+  const ResourceChart = ({ resource }: { resource: ComputeResource }) => {
     const maxValue = Math.max(...resource.history.map((h) => h.value));
     const chartHeight = 100;
 
@@ -501,7 +530,7 @@ export default function ComputePage() {
     );
   };
 
-  const TaskRow = ({ task }) => {
+  const TaskRow = ({ task }: { task: ComputeTask }) => {
     return (
       <TableRow
         className="cursor-pointer hover:bg-black/30"
