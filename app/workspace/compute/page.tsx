@@ -40,7 +40,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { NewTaskDialog } from "@/components/NewTaskDialog";
 import {
   Select,
   SelectContent,
