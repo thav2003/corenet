@@ -15,12 +15,15 @@ import { Progress } from "@/components/ui/progress";
 import {
   Clock,
   CheckCircle2,
-  AlertCircle,
   Cpu,
   Coins,
   Terminal,
   Brain,
   Database,
+  Play,
+  XCircle,
+  Download,
+  Loader2,
 } from "lucide-react";
 import { mockTasks } from "../../mockTasks";
 import { CreateTaskButton } from "../../../../components/CreateTaskButton";
@@ -28,6 +31,7 @@ import { CreateTaskButton } from "../../../../components/CreateTaskButton";
 export default function TaskDetailsPage() {
   const { taskId } = useParams();
   const task = mockTasks.find((t) => t.id === Number(taskId));
+  const [isLoading, setIsLoading] = React.useState(false);
 
   if (!task) {
     return (
@@ -46,12 +50,97 @@ export default function TaskDetailsPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case "created":
+        return <Clock className="h-4 w-4 text-[#A374FF]" />;
       case "running":
-        return <Clock className="h-4 w-4 text-[#00E5FF]" />;
+        return <Loader2 className="h-4 w-4 text-[#00E5FF] animate-spin" />;
       case "completed":
         return <CheckCircle2 className="h-4 w-4 text-[#00FFA3]" />;
-      case "queued":
-        return <AlertCircle className="h-4 w-4 text-[#A374FF]" />;
+      case "failed":
+        return <XCircle className="h-4 w-4 text-red-500" />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "created":
+        return "bg-[#A374FF]/20 text-[#A374FF]";
+      case "running":
+        return "bg-[#00E5FF]/20 text-[#00E5FF]";
+      case "completed":
+        return "bg-[#00FFA3]/20 text-[#00FFA3]";
+      case "failed":
+        return "bg-red-500/20 text-red-500";
+      default:
+        return "";
+    }
+  };
+
+  const handleRunTask = async () => {
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsLoading(false);
+  };
+
+  const handleCancelTask = async () => {
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsLoading(false);
+  };
+
+  const handleDownloadResult = async () => {
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsLoading(false);
+  };
+
+  const ActionButton = () => {
+    if (isLoading) {
+      return (
+        <Button disabled className="w-full">
+          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          Processing...
+        </Button>
+      );
+    }
+
+    switch (task.status) {
+      case "created":
+        return (
+          <Button
+            onClick={handleRunTask}
+            className="w-full bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-white hover:opacity-90"
+          >
+            <Play className="h-4 w-4 mr-2" />
+            Run Task
+          </Button>
+        );
+      case "running":
+        return (
+          <Button
+            onClick={handleCancelTask}
+            variant="destructive"
+            className="w-full"
+          >
+            <XCircle className="h-4 w-4 mr-2" />
+            Cancel Task
+          </Button>
+        );
+      case "completed":
+        return task.details.result ? (
+          <Button
+            onClick={handleDownloadResult}
+            className="w-full bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-white hover:opacity-90"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Download Result
+          </Button>
+        ) : null;
       default:
         return null;
     }
@@ -65,28 +154,23 @@ export default function TaskDetailsPage() {
             {task.name}
           </h1>
           <div className="flex items-center gap-4 mt-1">
-            <p className="text-gray-300 text-sm">{task.type}</p>
             <div
               className={`px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
-                task.mode === "prediction"
+                task.type === "AI Predict"
                   ? "bg-[#00FFA3]/20 text-[#00FFA3]"
                   : "bg-[#A374FF]/20 text-[#A374FF]"
               }`}
             >
               <Brain className="h-4 w-4" />
-              <span className="capitalize">{task.mode}</span>
+              <span className="capitalize">{task.type}</span>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <div
-            className={`px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
-              task.status === "running"
-                ? "bg-[#00E5FF]/20 text-[#00E5FF]"
-                : task.status === "completed"
-                ? "bg-[#00FFA3]/20 text-[#00FFA3]"
-                : "bg-[#A374FF]/20 text-[#A374FF]"
-            }`}
+            className={`px-3 py-1 rounded-full text-sm flex items-center gap-2 ${getStatusColor(
+              task.status
+            )}`}
           >
             {getStatusIcon(task.status)}
             <span className="capitalize">{task.status}</span>
@@ -133,23 +217,36 @@ export default function TaskDetailsPage() {
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4 text-[#00E5FF]" />
               <span className="text-sm text-gray-300">Model:</span>
-              <span className="text-sm text-white">{task.details.model}</span>
+              <span className="text-sm text-white">{task.model}</span>
             </div>
-            {task.details.dataset && (
-              <div className="flex items-center gap-2">
-                <Database className="h-4 w-4 text-[#00FFA3]" />
-                <span className="text-sm text-gray-300">Dataset:</span>
-                <span className="text-sm text-white">
-                  {task.details.dataset}
-                </span>
-              </div>
+            {task.type === "AI Training" && (
+              <>
+                <div className="flex items-center gap-2">
+                  <Database className="h-4 w-4 text-[#00FFA3]" />
+                  <span className="text-sm text-gray-300">Dataset:</span>
+                  <span className="text-sm text-white">
+                    {task.details.dataset} (
+                    {task.details.datasetSize?.toLocaleString()} samples)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-[#A374FF]" />
+                  <span className="text-sm text-gray-300">
+                    Training Config:
+                  </span>
+                  <span className="text-sm text-white">
+                    {task.details.epochs} epochs, batch {task.details.batchSize}
+                    , lr {task.details.learningRate}
+                  </span>
+                </div>
+              </>
             )}
-            {task.details.epochs && (
+            {task.type === "AI Predict" && task.details.prompt && (
               <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-[#A374FF]" />
-                <span className="text-sm text-gray-300">Epochs:</span>
+                <Terminal className="h-4 w-4 text-[#00FFA3]" />
+                <span className="text-sm text-gray-300">Prompt:</span>
                 <span className="text-sm text-white">
-                  {task.details.epochs}
+                  {task.details.prompt}
                 </span>
               </div>
             )}
@@ -213,15 +310,7 @@ export default function TaskDetailsPage() {
       )}
 
       <CardFooter className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          className="border-[#A374FF]/20 hover:border-[#A374FF] hover:bg-[#A374FF]/10 text-gray-300"
-        >
-          Cancel Task
-        </Button>
-        <Button className="bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-white hover:opacity-90">
-          Download Results
-        </Button>
+        <ActionButton />
       </CardFooter>
     </div>
   );

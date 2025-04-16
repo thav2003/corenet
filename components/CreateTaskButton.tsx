@@ -30,31 +30,24 @@ import { Plus } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { Textarea } from "@/components/ui/textarea";
 
-const taskTypes = [
-  "AI Compute",
-  "ZK Compute",
-  "MEV Optimization",
-  "Data Processing",
+const taskTypes = ["AI Training", "AI Predict"] as const;
+
+const models = [
+  "GPT-3",
+  "BERT",
+  "Stable Diffusion",
+  "ResNet",
+  "Transformer",
 ] as const;
 
-const models = {
-  "AI Compute": ["Image Classifier", "Text Summarizer", "LLM Model"],
-  "ZK Compute": ["Fraud Detector", "Privacy Preserver", "Zero Knowledge Proof"],
-  "MEV Optimization": ["Arbitrage Bot", "Sandwich Bot", "Liquidation Bot"],
-  "Data Processing": [
-    "Data Analyzer",
-    "Pattern Detector",
-    "Blockchain Scanner",
-  ],
-} as const;
-
-const formSchema = z.object({
+const baseSchema = z.object({
   name: z.string().min(1, "Task name is required"),
   type: z.enum(taskTypes, {
     required_error: "Please select a task type",
   }),
-  model: z.string({
+  model: z.enum(models, {
     required_error: "Please select a model",
   }),
   computeUnits: z.coerce
@@ -64,17 +57,46 @@ const formSchema = z.object({
   memory: z.coerce.number().min(1, "Minimum 1GB").max(64, "Maximum 64GB"),
 });
 
+const trainingSchema = baseSchema.extend({
+  epochs: z.coerce
+    .number()
+    .min(1, "Minimum 1 epoch")
+    .max(100, "Maximum 100 epochs"),
+  batchSize: z.coerce
+    .number()
+    .min(1, "Minimum batch size 1")
+    .max(512, "Maximum batch size 512"),
+  learningRate: z.coerce
+    .number()
+    .min(0.0001, "Minimum learning rate 0.0001")
+    .max(1, "Maximum learning rate 1"),
+  dataset: z.string().min(1, "Dataset is required"),
+});
+
+const predictSchema = baseSchema.extend({
+  // dataset: z.string().min(1, "Dataset is required"),
+});
+
 export function CreateTaskButton() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [taskType, setTaskType] = React.useState<(typeof taskTypes)[number]>();
+  const form = useForm<
+    z.infer<typeof trainingSchema> | z.infer<typeof predictSchema>
+  >({
+    resolver: zodResolver(
+      taskType === "AI Training" ? trainingSchema : predictSchema
+    ),
   });
 
-  const selectedType = form.watch("type");
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Here you would typically make an API call to create the task
+  function onSubmit(
+    values: z.infer<typeof trainingSchema> | z.infer<typeof predictSchema>
+  ) {
     console.log(values);
   }
+
+  const handleTaskTypeChange = (value: (typeof taskTypes)[number]) => {
+    setTaskType(value);
+    form.reset();
+  };
 
   return (
     <Dialog>
@@ -90,7 +112,7 @@ export function CreateTaskButton() {
             Create New Task
           </DialogTitle>
           <DialogDescription className="text-gray-400">
-            Configure your compute task settings
+            Configure your AI task settings
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -119,7 +141,10 @@ export function CreateTaskButton() {
                 <FormItem>
                   <FormLabel className="text-gray-200">Task Type</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
+                    onValueChange={(value: (typeof taskTypes)[number]) => {
+                      field.onChange(value);
+                      handleTaskTypeChange(value);
+                    }}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -152,7 +177,6 @@ export function CreateTaskButton() {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
-                    disabled={!selectedType}
                   >
                     <FormControl>
                       <SelectTrigger className="bg-black/50 w-full border-[#A374FF]/20 text-white">
@@ -160,16 +184,15 @@ export function CreateTaskButton() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-black/90 border-[#A374FF]/20">
-                      {selectedType &&
-                        models[selectedType].map((model) => (
-                          <SelectItem
-                            key={model}
-                            value={model}
-                            className="text-gray-200 focus:bg-[#A374FF]/20 focus:text-white"
-                          >
-                            {model}
-                          </SelectItem>
-                        ))}
+                      {models.map((model) => (
+                        <SelectItem
+                          key={model}
+                          value={model}
+                          className="text-gray-200 focus:bg-[#A374FF]/20 focus:text-white"
+                        >
+                          {model}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -222,6 +245,92 @@ export function CreateTaskButton() {
                 )}
               />
             </div>
+
+            {taskType === "AI Training" && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="epochs"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-200">Epochs</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="10"
+                            className="bg-black/50 border-[#A374FF]/20 text-white"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="batchSize"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-200">
+                          Batch Size
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="32"
+                            className="bg-black/50 border-[#A374FF]/20 text-white"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="learningRate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-200">
+                        Learning Rate
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.0001"
+                          placeholder="0.001"
+                          className="bg-black/50 border-[#A374FF]/20 text-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="dataset"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-200">Dataset</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter dataset path or URL"
+                          className="bg-black/50 border-[#A374FF]/20 text-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+
+            {taskType === "AI Predict" && <> </>}
+
             <DialogFooter>
               <Button
                 type="submit"
