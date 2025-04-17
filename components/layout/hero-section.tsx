@@ -46,18 +46,29 @@ export function HeroSection() {
             variants={itemVariants}
           >
             Alchemy combines the most powerful web3 developer products and tools
-            with resources, community and legendary support.  
-            
+            with resources, community and legendary support.
           </motion.p>
 
           <motion.div variants={itemVariants}>
-            <Button
-              variant="default"
-              size="lg"
-              className="font-medium bg-[#A374FF] hover:bg-[#A374FF]/90"
+            <motion.button
+              className="cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 px-8 py-2 text-white font-medium"
+              initial={{ backgroundColor: "#A374FF" }}
+              whileHover={{
+                backgroundColor: "#7C4DFF",
+                scale: 1.03,
+                boxShadow: "0 0 15px rgba(163, 116, 255, 0.5)",
+              }}
+              transition={{
+                duration: 0.3,
+                backgroundColor: {
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20,
+                },
+              }}
             >
               Explore CoreNet
-            </Button>
+            </motion.button>
           </motion.div>
         </div>
       </motion.div>

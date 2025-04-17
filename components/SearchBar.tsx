@@ -83,9 +83,9 @@ export function SearchBar() {
   };
 
   return (
-    <div className="relative w-full" ref={searchRef}>
-      <div className="relative w-full max-w-xl">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+    <div className="relative min-w-full" ref={searchRef}>
+      <div className="relative w-full max-w-full">
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-black-400 z-10" />
         <Input
           type="search"
           placeholder="Search models..."

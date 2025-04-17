@@ -1,13 +1,20 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import Link from "next/link"
-import { BookmarkIcon, Share2Icon, StarIcon, DownloadIcon, MessageSquareIcon, ZapIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-
+import { useState } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import {
+  BookmarkIcon,
+  Share2Icon,
+  StarIcon,
+  DownloadIcon,
+  MessageSquareIcon,
+  ZapIcon,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { SearchBar } from "../SearchBar";
 // Sample data for the model cards
 const modelCardsData = [
   {
@@ -87,7 +94,7 @@ const modelCardsData = [
     moreTags: 19,
     visualizationSrc: "/visualizations/image-text.svg",
   },
-]
+];
 
 export function ModelCards({ className }: { className?: string }) {
   // Animation variants
@@ -99,7 +106,7 @@ export function ModelCards({ className }: { className?: string }) {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const item = {
     hidden: { opacity: 0, y: 20 },
@@ -108,7 +115,7 @@ export function ModelCards({ className }: { className?: string }) {
       y: 0,
       transition: { duration: 0.3 },
     },
-  }
+  };
 
   return (
     <motion.div
@@ -117,6 +124,10 @@ export function ModelCards({ className }: { className?: string }) {
       initial="hidden"
       animate="show"
     >
+      <motion.div className="flex flex-1 items-center mb-8">
+        <SearchBar />
+      </motion.div>
+
       <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
         variants={container}
@@ -128,21 +139,32 @@ export function ModelCards({ className }: { className?: string }) {
         ))}
       </motion.div>
     </motion.div>
-  )
+  );
 }
 
 // Badge component for tags
-function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
+function Badge({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <span className={cn("inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold", className)}>
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+        className
+      )}
+    >
       {children}
     </span>
-  )
+  );
 }
 
 // Individual card component (internal to ModelCards)
 function ModelCard({ model }: { model: (typeof modelCardsData)[0] }) {
-  const [isHovered, setIsHovered] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.div
@@ -160,13 +182,18 @@ function ModelCard({ model }: { model: (typeof modelCardsData)[0] }) {
       onHoverEnd={() => setIsHovered(false)}
     >
       <div className="p-4 pb-0">
-        <Link href="#" className="text-blue-500 text-sm font-medium hover:underline">
+        <Link
+          href="#"
+          className="text-blue-500 text-sm font-medium hover:underline"
+        >
           {model.tag}
         </Link>
 
         <div className="mt-4 h-32 flex items-center justify-center bg-gray-50 rounded-md overflow-hidden">
           <img
-            src={model.visualizationSrc || "/placeholder.svg?height=150&width=200"}
+            src={
+              model.visualizationSrc || "/placeholder.svg?height=150&width=200"
+            }
             alt="Neural Visualization"
             className="max-h-full"
           />
@@ -216,12 +243,16 @@ function ModelCard({ model }: { model: (typeof modelCardsData)[0] }) {
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
-          <span className="font-medium mr-1">{model.author}</span>•<span className="ml-1">{model.date}</span>
+          <span className="font-medium mr-1">{model.author}</span>•
+          <span className="ml-1">{model.date}</span>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-4">
           {model.tags.map((tag, index) => (
-            <Badge key={index} className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200">
+            <Badge
+              key={index}
+              className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200"
+            >
               {tag}
             </Badge>
           ))}
@@ -268,5 +299,5 @@ function ModelCard({ model }: { model: (typeof modelCardsData)[0] }) {
         </div>
       </div>
     </motion.div>
-  )
+  );
 }

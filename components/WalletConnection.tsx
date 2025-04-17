@@ -212,7 +212,7 @@ const WalletConnection = () => {
             <Button
               variant="default"
               size="sm"
-              className="font-medium h-9 w-28 bg-[#A374FF] hover:bg-[#A374FF]/80 text-white hover:shadow-[0_0_15px_#A374FF40] transition-all"
+              className="cursor-pointer font-medium h-9 w-28 bg-[#A374FF] hover:bg-[#A374FF]/80 text-white hover:shadow-[0_0_15px_#A374FF40] transition-all"
             >
               <LogIn className="mr-2 h-4 w-4" />
               Login
