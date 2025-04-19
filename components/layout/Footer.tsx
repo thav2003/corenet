@@ -139,22 +139,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-[#A374FF]/10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-gray-600 text-sm">© 2025 CoreNet. All rights reserved.</div>
-            <div className="flex gap-6 text-sm">
-              <a href="#" className="text-gray-600 hover:text-[#A374FF] transition-colors">
-                Privacy Policy
-              </a>
-              <a href="#" className="text-gray-600 hover:text-[#A374FF] transition-colors">
-                Terms of Service
-              </a>
-              <a href="#" className="text-gray-600 hover:text-[#A374FF] transition-colors">
-                Cookie Policy
-              </a>
-            </div>
-          </div>
-        </div>
+       
       </div>
     </footer>
   )
