@@ -1,9 +1,11 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import bs58 from "bs58";
 import nacl from "tweetnacl";
-import { prisma } from "./prisma";
+import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "./prisma";
 
 type SignMessage = {
   domain: string;
@@ -129,3 +131,61 @@ export const authOptions: NextAuthOptions = {
 };
 
 export const getAuthSession = () => getServerSession(authOptions);
+
+export async function getAuthUser() {
+  const session = await getServerSession();
+  
+  if (!session || !session.user) {
+    return null;
+  }
+
+  // Giả sử có thông tin wallet trong session
+  const walletAddress = session.user.address;
+  
+  if (!walletAddress) {
+    return null;
+  }
+
+  // Tìm wallet theo địa chỉ
+  const wallet = await prisma.wallet.findUnique({
+    where: { address: walletAddress },
+  });
+
+  if (!wallet) {
+    return null;
+  }
+
+  // Tìm user liên kết với wallet
+  const user = await prisma.user.findUnique({
+    where: { walletId: wallet.id },
+  });
+
+  // Nếu chưa có user, tạo mới
+  if (!user) {
+    const newUser = await prisma.user.create({
+      data: {
+        walletId: wallet.id,
+      }
+    });
+    return { wallet, user: newUser };
+  }
+
+  return { wallet, user };
+}
+
+export async function withAuth(
+  handler: (req: NextRequest, context: { params: any }, user: any) => Promise<NextResponse>
+) {
+  return async (req: NextRequest, context: { params: any }) => {
+    const authData = await getAuthUser();
+    
+    if (!authData) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    return handler(req, context, authData);
+  };
+}

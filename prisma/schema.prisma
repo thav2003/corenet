@@ -18,4 +18,61 @@ model Wallet {
   address   String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User?
+  tasks     Task[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  walletId  String   @unique
+  wallet    Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  name      String?
+  models    Model[]
+  tasks     Task[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Model {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  filePath    String
+  fileSize    Int
+  fileType    String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  type        TaskType
+  status      TaskStatus @default(PENDING)
+  params      String?   // JSON stringified parameters
+  result      String?   // JSON stringified results
+  modelId     String?
+  model       Model?    @relation(fields: [modelId], references: [id])
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletId    String
+  wallet      Wallet    @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum TaskType {
+  TRAINING
+  USE
+}
+
+enum TaskStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
 }
