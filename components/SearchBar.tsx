@@ -101,7 +101,7 @@ export function SearchBar() {
 
       {/* Search Results Dropdown */}
       {showResults && (models.length > 0 || loading) && (
-        <div className="absolute top-12 left-0 right-0 bg-black/90 border border-[#A374FF]/20 rounded-lg shadow-lg max-h-[32rem] overflow-y-auto backdrop-blur-sm">
+        <div className="absolute top-12 left-0 right-0 bg-black/90 border border-[#A374FF]/20 rounded-lg shadow-lg max-h-[32rem] overflow-y-auto backdrop-blur-sm z-10">
           {loading ? (
             <div className="p-4 text-center text-gray-400">
               <div className="animate-pulse">Searching models...</div>

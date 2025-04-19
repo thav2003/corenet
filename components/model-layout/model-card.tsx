@@ -62,7 +62,7 @@ export function ModelCard({ model }: ModelCardProps) {
           ))}
         </div>
 
-        <Button className="w-full">See details</Button>
+        <Button className="w-full cursor-pointer">See details</Button>
       </div>
     </div>
   )

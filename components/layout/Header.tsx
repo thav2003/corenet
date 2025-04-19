@@ -4,7 +4,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 import Image from "next/image"
 import { Logo } from "../icon";
-import { SearchBar } from "../SearchBar"
 import WalletConnection from "../WalletConnection"
 import MobileNav from "./MobileNav"
 

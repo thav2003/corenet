@@ -6,11 +6,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/SelectModel";
-
+import { SearchBar } from "../SearchBar";
 export function ToolBar() {
   return (
     <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 w-[50%]">
+        <div className="flex flex-1 items-center">
+          <SearchBar />
+        </div>
         <Button variant="outline" size="sm" className="flex items-center gap-2">
           <span className="w-4 h-4">
             <svg
