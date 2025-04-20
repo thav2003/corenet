@@ -178,119 +178,119 @@ export default function TaskDetailsPage() {
     }
   };
 
-  // Move SSE connection to useEffect
-  useEffect(() => {
-    let eventSource: EventSource | null = null;
+  // // Move SSE connection to useEffect
+  // useEffect(() => {
+  //   let eventSource: EventSource | null = null;
 
-    if (task?.status === "running") {
-      // Establish SSE connection to monitor progress
-      eventSource = new EventSource(`http://localhost:8000/training/start`);
+  //   if (task?.status === "running") {
+  //     // Establish SSE connection to monitor progress
+  //     eventSource = new EventSource(`http://localhost:8000/training/start`);
 
-      // Handle pod creation events
-      if (eventSource) {
-        eventSource.addEventListener("create_pod", (e) => {
-          console.log("Creating pod:", e.data);
-          setLogs((prev) => [...prev, `Creating pod: ${e.data}`]);
-        });
+  //     // Handle pod creation events
+  //     if (eventSource) {
+  //       eventSource.addEventListener("create_pod", (e) => {
+  //         console.log("Creating pod:", e.data);
+  //         setLogs((prev) => [...prev, `Creating pod: ${e.data}`]);
+  //       });
 
-        eventSource.addEventListener("pod_created", (e) => {
-          console.log("Pod created:", e.data);
-          setLogs((prev) => [...prev, `Pod created: ${e.data}`]);
-        });
+  //       eventSource.addEventListener("pod_created", (e) => {
+  //         console.log("Pod created:", e.data);
+  //         setLogs((prev) => [...prev, `Pod created: ${e.data}`]);
+  //       });
 
-        // Handle pod status updates
-        eventSource.addEventListener("pod_status", (e) => {
-          const data = JSON.parse(e.data);
-          console.log("Pod status:", data);
+  //       // Handle pod status updates
+  //       eventSource.addEventListener("pod_status", (e) => {
+  //         const data = JSON.parse(e.data);
+  //         console.log("Pod status:", data);
 
-          if (data.status) {
-            setTask((prev) => ({
-              ...prev!,
-              status:
-                data.status === "Running"
-                  ? "running"
-                  : data.status.toLowerCase(),
-              progress: data.progress || prev!.progress,
-              timeLeft: data.timeLeft || prev!.timeLeft,
-            }));
-          }
+  //         if (data.status) {
+  //           setTask((prev) => ({
+  //             ...prev!,
+  //             status:
+  //               data.status === "Running"
+  //                 ? "running"
+  //                 : data.status.toLowerCase(),
+  //             progress: data.progress || prev!.progress,
+  //             timeLeft: data.timeLeft || prev!.timeLeft,
+  //           }));
+  //         }
 
-          // Update resource usage if available
-          if (data.resources) {
-            setResourceData((prev) => [
-              ...prev.slice(-9),
-              {
-                time: new Date().toLocaleTimeString("en-US", {
-                  hour12: false,
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                }),
-                ...data.resources,
-              },
-            ]);
-          }
+  //         // Update resource usage if available
+  //         if (data.resources) {
+  //           setResourceData((prev) => [
+  //             ...prev.slice(-9),
+  //             {
+  //               time: new Date().toLocaleTimeString("en-US", {
+  //                 hour12: false,
+  //                 hour: "2-digit",
+  //                 minute: "2-digit",
+  //                 second: "2-digit",
+  //               }),
+  //               ...data.resources,
+  //             },
+  //           ]);
+  //         }
 
-          // Update training metrics if available
-          if (data.metrics) {
-            setTrainingMetrics((prev) => [...prev, data.metrics]);
-          }
-        });
+  //         // Update training metrics if available
+  //         if (data.metrics) {
+  //           setTrainingMetrics((prev) => [...prev, data.metrics]);
+  //         }
+  //       });
 
-        // Handle logs
-        eventSource.addEventListener("log", (e) => {
-          console.log("Pod log:", e.data);
-          setLogs((prev) => [...prev, e.data]);
-        });
+  //       // Handle logs
+  //       eventSource.addEventListener("log", (e) => {
+  //         console.log("Pod log:", e.data);
+  //         setLogs((prev) => [...prev, e.data]);
+  //       });
 
-        // Handle various error events
-        ["create_pod", "get_pod_id", "pod_status", "unexpected"].forEach(
-          (errorType) => {
-            eventSource.addEventListener(errorType, (e) => {
-              const data =
-                typeof e.data === "string" ? e.data : JSON.stringify(e.data);
-              if (data.includes("error")) {
-                console.error(`${errorType} error:`, data);
-                setLogs((prev) => [...prev, `Error (${errorType}): ${data}`]);
+  //       // Handle various error events
+  //       ["create_pod", "get_pod_id", "pod_status", "unexpected"].forEach(
+  //         (errorType) => {
+  //           eventSource?.addEventListener(errorType, (e) => {
+  //             const data =
+  //               typeof e.data === "string" ? e.data : JSON.stringify(e.data);
+  //             if (data.includes("error")) {
+  //               console.error(`${errorType} error:`, data);
+  //               setLogs((prev) => [...prev, `Error (${errorType}): ${data}`]);
 
-                // If it's a fatal error, reset to created state
-                if (errorType === "unexpected" || data.includes("fatal")) {
-                  eventSource.close();
-                  setTask((prev) => ({ ...prev!, status: "created" }));
-                }
-              }
-            });
-          }
-        );
+  //               // If it's a fatal error, reset to created state
+  //               if (errorType === "unexpected" || data.includes("fatal")) {
+  //                 eventSource?.close();
+  //                 setTask((prev) => ({ ...prev!, status: "created" }));
+  //               }
+  //             }
+  //           });
+  //         }
+  //       );
 
-        // Handle connection close
-        eventSource.addEventListener("close", () => {
-          console.log("SSE connection closed");
-          eventSource.close();
-        });
+  //       // Handle connection close
+  //       eventSource.addEventListener("close", () => {
+  //         console.log("SSE connection closed");
+  //         eventSource?.close();
+  //       });
 
-        // Handle general errors
-        eventSource.onerror = (error: Event) => {
-          console.error("SSE Error:", error);
-          eventSource.close();
-          setLogs((prev) => [
-            ...prev,
-            `Connection error: SSE connection failed`,
-          ]);
-          // Reset to created state on connection error
-          setTask((prev) => ({ ...prev!, status: "created" }));
-        };
-      }
-    }
+  //       // Handle general errors
+  //       eventSource.onerror = (error: Event) => {
+  //         console.error("SSE Error:", error);
+  //         eventSource?.close();
+  //         setLogs((prev) => [
+  //           ...prev,
+  //           `Connection error: SSE connection failed`,
+  //         ]);
+  //         // Reset to created state on connection error
+  //         setTask((prev) => ({ ...prev!, status: "created" }));
+  //       };
+  //     }
+  //   }
 
-    // Cleanup function to close SSE connection
-    return () => {
-      if (eventSource) {
-        console.log("Cleaning up SSE connection");
-        eventSource.close();
-      }
-    };
-  }, [task?.status, taskId]); // Add dependencies
+  //   // Cleanup function to close SSE connection
+  //   return () => {
+  //     if (eventSource) {
+  //       console.log("Cleaning up SSE connection");
+  //       eventSource.close();
+  //     }
+  //   };
+  // }, [task?.status, taskId]); // Add dependencies
 
   const handleCancelTask = async () => {
     setIsLoading(true);
