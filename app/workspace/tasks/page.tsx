@@ -41,24 +41,25 @@ export default function TasksPage() {
         {tasks.map((task) => {
           const StatusIcon = statusIcons[task.status];
           return (
-            <Card key={task.id} className="bg-black/50 border-[#A374FF]/20">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg text-white flex items-center gap-2">
-                  {StatusIcon && (
-                    <StatusIcon
-                      className={cn(
-                        "h-4 w-4",
-                        statusColors[task.status],
-                        task.status === "running" && "animate-spin"
-                      )}
-                    />
-                  )}
-                  {task.name}
-                </CardTitle>
-                <span className="text-xs text-gray-400">{task.model}</span>
+            <Card
+              key={task.id}
+              className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all"
+            >
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-[#334155]">
+                      {task.name}
+                    </CardTitle>
+                    <p className="text-sm text-[#64748B]">{task.model}</p>
+                  </div>
+                  <StatusIcon
+                    className={cn("h-5 w-5", statusColors[task.status])}
+                  />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="flex justify-between text-sm text-gray-300">
+                <div className="flex justify-between text-sm text-[#64748B]">
                   <span>Date: {task.created}</span>
                   <span className="capitalize">{task.status}</span>
                 </div>
@@ -66,7 +67,7 @@ export default function TasksPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-[#A374FF]/20 hover:border-[#A374FF] hover:bg-[#A374FF]/10 text-gray-300 flex items-center gap-1"
+                    className="border-[#E8EFFF] hover:border-[#A374FF] hover:bg-[#A374FF]/10 text-[#64748B] flex items-center gap-1"
                     onClick={() => router.push(`/workspace/tasks/${task.id}`)}
                   >
                     <Eye className="h-4 w-4" />

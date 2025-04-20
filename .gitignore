@@ -42,3 +42,7 @@ next-env.d.ts
 
 # prisma
 .prisma/dev.db
+
+#lockfile
+package-lock.json
+pnpm-lock.yaml
