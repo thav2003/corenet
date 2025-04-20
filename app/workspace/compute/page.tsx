@@ -419,7 +419,7 @@ export default function ComputePage() {
           <div className="flex justify-between items-center">
             <div>
               <CardTitle className="text-lg text-[#334155]">
-                {resource.name}
+                {resource.type}
               </CardTitle>
               <CardDescription className="text-[#64748B]">
                 {resource.description}
