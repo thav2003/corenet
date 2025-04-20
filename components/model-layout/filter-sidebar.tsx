@@ -12,10 +12,9 @@ export function FilterSidebar() {
       <div className="mb-6">
         <h2 className="font-medium text-gray-900 mb-3">Popular Categories</h2>
         <ul className="space-y-2">
-          <FilterItem icon={<Box /> as never} label="Natural language processing" />
-          <FilterItem icon={<Image /> as never} label="Computer vision" />
-          <FilterItem icon={<MicVocal /> as never} label="Audio Processing" />
-          <FilterItem icon={<LayoutGrid /> as never} label="Auto-generated source code" />
+          <FilterItem icon={<Box /> as never} label="Most downloaded" />
+          <FilterItem icon={<Image /> as never} label="Most liked" />
+          <FilterItem icon={<MicVocal /> as never} label="Trending" />
         </ul>
       </div>
 
