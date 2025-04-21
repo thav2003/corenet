@@ -183,9 +183,7 @@ export default function WorkspacePage() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-          {value}
-        </div>
+        <div className="text-2xl font-bold text-blue-500">{value}</div>
         <p className="text-xs text-[#64748B] mt-1">{description}</p>
       </CardContent>
     </Card>
@@ -195,7 +193,7 @@ export default function WorkspacePage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
+          <h1 className="text-2xl font-bold text-blue-500">
             Workspace Dashboard
           </h1>
           <p className="text-gray-400 text-sm mt-1">

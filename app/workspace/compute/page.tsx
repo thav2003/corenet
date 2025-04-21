@@ -501,9 +501,7 @@ export default function ComputePage() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-          {value}
-        </div>
+        <div className="text-2xl font-bold text-blue-500">{value}</div>
         <p className="text-xs text-gray-300 mt-1">{description}</p>
       </CardContent>
     </Card>
@@ -646,9 +644,7 @@ export default function ComputePage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-            Compute Resources
-          </h1>
+          <h1 className="text-2xl font-bold text-blue-500">Compute</h1>
           <p className="text-gray-300 text-sm mt-1">
             Manage and monitor your CoreNet compute resources
           </p>
@@ -691,9 +687,7 @@ export default function ComputePage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-                  2,600
-                </div>
+                <div className="text-2xl font-bold text-blue-500">2,600</div>
                 <p className="text-xs text-[#64748B] mt-1">
                   Available across all compute types
                 </p>
@@ -711,9 +705,7 @@ export default function ComputePage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-                  40
-                </div>
+                <div className="text-2xl font-bold text-blue-500">40</div>
                 <p className="text-xs text-[#64748B] mt-1">
                   Currently running compute tasks
                 </p>
@@ -731,9 +723,7 @@ export default function ComputePage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-                  61.5%
-                </div>
+                <div className="text-2xl font-bold text-blue-500">61.5%</div>
                 <p className="text-xs text-[#64748B] mt-1">
                   Average utilization across resources
                 </p>
@@ -751,9 +741,7 @@ export default function ComputePage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-                  156
-                </div>
+                <div className="text-2xl font-bold text-blue-500">156</div>
                 <p className="text-xs text-[#64748B] mt-1">
                   Tasks completed this month
                 </p>
@@ -981,7 +969,7 @@ export default function ComputePage() {
       >
         <DialogContent className="bg-black/90 border-[#A374FF]/20 text-white">
           <DialogHeader>
-            <DialogTitle className="text-xl bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
+            <DialogTitle className="text-xl text-blue-500">
               Manage {selectedResource?.type} Resources
             </DialogTitle>
             <DialogDescription className="text-gray-300">

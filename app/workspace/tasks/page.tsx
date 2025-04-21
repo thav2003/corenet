@@ -32,9 +32,7 @@ export default function TasksPage() {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-          My Tasks
-        </h1>
+        <h1 className="text-2xl font-bold text-blue-500">My Tasks</h1>
         <CreateTaskButton />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

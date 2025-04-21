@@ -62,7 +62,7 @@ export default function SettingsPage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
+          <h1 className="text-2xl font-bold text-blue-500">
             Workspace Settings
           </h1>
           <p className="text-gray-400 text-sm mt-1">

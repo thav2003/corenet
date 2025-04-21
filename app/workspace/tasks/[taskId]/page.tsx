@@ -37,6 +37,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function TaskDetailsPage() {
   const { taskId } = useParams();
@@ -45,6 +47,17 @@ export default function TaskDetailsPage() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
+  const [promptInput, setPromptInput] = useState("");
+  const [imageConfig, setImageConfig] = useState({
+    width: 512,
+    height: 512,
+    steps: 30,
+    guidance_scale: 7.5,
+    negative_prompt: "",
+  });
+  const [chatMessages, setChatMessages] = useState<
+    Array<{ role: string; content: string }>
+  >([]);
 
   // Resource usage data
   const [resourceData, setResourceData] = useState([
@@ -54,15 +67,6 @@ export default function TaskDetailsPage() {
     { time: "00:03", gpu: 65, memory: 45, cpu: 60, network: 40, disk: 30 },
     { time: "00:04", gpu: 85, memory: 60, cpu: 80, network: 55, disk: 45 },
     { time: "00:05", gpu: 75, memory: 55, cpu: 70, network: 45, disk: 35 },
-  ]);
-
-  // Training metrics data
-  const [trainingMetrics, setTrainingMetrics] = useState([
-    { epoch: 1, loss: 2.5, accuracy: 0.3, val_loss: 2.3, val_accuracy: 0.32 },
-    { epoch: 2, loss: 2.1, accuracy: 0.45, val_loss: 2.0, val_accuracy: 0.44 },
-    { epoch: 3, loss: 1.8, accuracy: 0.55, val_loss: 1.7, val_accuracy: 0.54 },
-    { epoch: 4, loss: 1.5, accuracy: 0.65, val_loss: 1.6, val_accuracy: 0.62 },
-    { epoch: 5, loss: 1.2, accuracy: 0.75, val_loss: 1.3, val_accuracy: 0.72 },
   ]);
 
   // Add a ref for the logs container
@@ -82,6 +86,16 @@ export default function TaskDetailsPage() {
       setLogs(task.details.logs);
     }
   }, [task?.details?.logs]);
+
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Add useEffect for chat auto-scroll
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [chatMessages]);
 
   if (!task) {
     return (
@@ -132,37 +146,7 @@ export default function TaskDetailsPage() {
     try {
       setIsLoading(true);
 
-      // Make POST request to start the task
-      const response = await fetch("http://localhost:8000/training/start", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          taskId: taskId,
-          type: task.type,
-          model: task.model,
-          dataset_path: task.details.dataset,
-          model_name: task.model,
-          // gpuCount: task.details.gpuCount,
-          // vcpusPerGpu: task.details.vcpusPerGpu,
-          // ramPerGpu: task.details.ramPerGpu,
-          // diskSize: task.details.diskSize,
-          // trainingScript: task.details.trainingScript,
-          dataset: task.details.dataset,
-          // pretrainedModel: task.details.pretrainedModel,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to start task: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      console.log("Task started:", result);
-
-      // Only update status to running after successful API call
-      setTask((prev) => ({ ...prev!, status: "running" }));
+      setChatMessages((prev) => [...prev, { role: "ai", content: "Hello" }]);
     } catch (error: unknown) {
       console.error("Failed to start task:", error);
       setLogs((prev) => [
@@ -172,7 +156,7 @@ export default function TaskDetailsPage() {
         }`,
       ]);
       // Keep the task in 'created' state so Run Task button remains visible
-      setTask((prev) => ({ ...prev!, status: "created" }));
+      setChatMessages((prev) => [...prev, { role: "ai", content: "Error" }]);
     } finally {
       setIsLoading(false);
     }
@@ -306,6 +290,182 @@ export default function TaskDetailsPage() {
     setIsLoading(false);
   };
 
+  const renderPredictionInterface = () => {
+    if (task.type !== "AI Predict") return null;
+
+    const modelType = task.model.toLowerCase();
+    const isImageModel =
+      modelType.includes("stable") || modelType.includes("dall-e");
+    const isChatModel =
+      modelType.includes("gpt") || modelType.includes("llama");
+
+    if (isImageModel) {
+      return (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm text-[#64748B]">Image Prompt</label>
+            <Textarea
+              value={promptInput}
+              onChange={(e) => setPromptInput(e.target.value)}
+              placeholder="Describe the image you want to generate..."
+              className="w-full h-32 bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] placeholder-[#64748B]"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm text-[#64748B]">Width</label>
+              <input
+                type="number"
+                value={imageConfig.width}
+                onChange={(e) =>
+                  setImageConfig({
+                    ...imageConfig,
+                    width: Number(e.target.value),
+                  })
+                }
+                className="w-full p-2 bg-[#F8FAFC] border border-[#E8EFFF] rounded-md text-[#334155]"
+                step={64}
+                min={256}
+                max={1024}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-[#64748B]">Height</label>
+              <input
+                type="number"
+                value={imageConfig.height}
+                onChange={(e) =>
+                  setImageConfig({
+                    ...imageConfig,
+                    height: Number(e.target.value),
+                  })
+                }
+                className="w-full p-2 bg-[#F8FAFC] border border-[#E8EFFF] rounded-md text-[#334155]"
+                step={64}
+                min={256}
+                max={1024}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-[#64748B]">Steps</label>
+              <input
+                type="number"
+                value={imageConfig.steps}
+                onChange={(e) =>
+                  setImageConfig({
+                    ...imageConfig,
+                    steps: Number(e.target.value),
+                  })
+                }
+                className="w-full p-2 bg-[#F8FAFC] border border-[#E8EFFF] rounded-md text-[#334155]"
+                min={10}
+                max={150}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-[#64748B]">Guidance Scale</label>
+              <input
+                type="number"
+                value={imageConfig.guidance_scale}
+                onChange={(e) =>
+                  setImageConfig({
+                    ...imageConfig,
+                    guidance_scale: Number(e.target.value),
+                  })
+                }
+                className="w-full p-2 bg-[#F8FAFC] border border-[#E8EFFF] rounded-md text-[#334155]"
+                step={0.5}
+                min={1}
+                max={20}
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm text-[#64748B]">Negative Prompt</label>
+            <Textarea
+              value={imageConfig.negative_prompt}
+              onChange={(e) =>
+                setImageConfig({
+                  ...imageConfig,
+                  negative_prompt: e.target.value,
+                })
+              }
+              placeholder="What to avoid in the generated image..."
+              className="w-full h-20 bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] placeholder-[#64748B]"
+            />
+          </div>
+        </div>
+      );
+    }
+
+    if (isChatModel) {
+      return (
+        <div className="space-y-4">
+          <div
+            ref={chatContainerRef}
+            className="bg-[#F8FAFC] rounded-lg p-4 h-[300px] overflow-y-auto space-y-4 scroll-smooth"
+          >
+            {chatMessages.map((msg, index) => (
+              <div
+                key={index}
+                className={`flex ${
+                  msg.role === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`max-w-[80%] p-3 rounded-lg ${
+                    msg.role === "user"
+                      ? "bg-[#A374FF] text-white"
+                      : "bg-white border border-[#E8EFFF] text-[#334155]"
+                  }`}
+                >
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Textarea
+              value={promptInput}
+              onChange={(e) => setPromptInput(e.target.value)}
+              placeholder="Type your message..."
+              className="flex-1 bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] placeholder-[#64748B]"
+            />
+            <Button
+              onClick={() => {
+                if (!promptInput.trim()) return;
+                setChatMessages((prev) => [
+                  ...prev,
+                  { role: "user", content: promptInput },
+                ]);
+                setPromptInput("");
+                handleRunTask();
+              }}
+              className="bg-[#A374FF] text-white transition-colors hover:bg-[#B68FFF]"
+            >
+              <Play className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // Default text prompt interface
+    return (
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <label className="text-sm text-[#64748B]">Prompt</label>
+          <Textarea
+            value={promptInput}
+            onChange={(e) => setPromptInput(e.target.value)}
+            placeholder="Enter your prompt here..."
+            className="w-full h-32 bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] placeholder-[#64748B]"
+          />
+        </div>
+      </div>
+    );
+  };
+
   const ActionButton = () => {
     if (isLoading) {
       return (
@@ -318,11 +478,23 @@ export default function TaskDetailsPage() {
 
     switch (task.status) {
       case "created":
+        if (task.type === "AI Predict") {
+          return (
+            <div className="w-full space-y-4">
+              {renderPredictionInterface()}
+              <Button
+                onClick={handleRunTask}
+                disabled={!promptInput.trim()}
+                className="w-full bg-[#A374FF] text-white transition-colors hover:bg-[#B68FFF]"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Run Prediction
+              </Button>
+            </div>
+          );
+        }
         return (
-          <Button
-            onClick={handleRunTask}
-            className="w-full bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-white hover:opacity-90"
-          >
+          <Button className="w-full bg-[#A374FF] text-white transition-colors hover:bg-[#B68FFF]">
             <Play className="h-4 w-4 mr-2" />
             Run Task
           </Button>
@@ -357,9 +529,7 @@ export default function TaskDetailsPage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-            {task.name}
-          </h1>
+          <h1 className="text-2xl font-bold text-blue-500">{task.name}</h1>
           <div className="flex items-center gap-4 mt-1">
             <div
               className={`px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
@@ -389,47 +559,41 @@ export default function TaskDetailsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
           <CardHeader>
-            <CardTitle className="text-lg text-[#334155]">Progress</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between text-sm text-[#64748B]">
-              <span>Completion</span>
-              <span>{task.progress}%</span>
-            </div>
-            <Progress
-              value={task.progress}
-              className="h-2 bg-[#F1F5F9] [&>div]:bg-gradient-to-r [&>div]:from-[#00FFA3] [&>div]:via-[#00E5FF] [&>div]:to-[#A374FF]"
-            />
-            <div className="text-sm text-[#64748B]">
-              Time remaining: {task.timeLeft}
-            </div>
-            {task.details.startTime && (
-              <div className="text-sm text-[#64748B]">
-                Started: {new Date(task.details.startTime).toLocaleString()}
-              </div>
-            )}
-            {task.details.endTime && (
-              <div className="text-sm text-[#64748B]">
-                Completed: {new Date(task.details.endTime).toLocaleString()}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
-          <CardHeader>
             <CardTitle className="text-lg text-[#334155]">
-              Task Details
+              {task.type === "AI Training"
+                ? "Training Progress"
+                : "Prediction Interface"}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Brain className="h-4 w-4 text-[#00E5FF]" />
-              <span className="text-sm text-[#64748B]">Model:</span>
-              <span className="text-sm text-[#334155]">{task.model}</span>
-            </div>
-            {task.type === "AI Training" && (
+            {task.type === "AI Training" ? (
               <>
+                <div className="flex justify-between text-sm text-[#64748B]">
+                  <span>Completion</span>
+                  <span>{task.progress}%</span>
+                </div>
+                <Progress
+                  value={task.progress}
+                  className="h-2 bg-[#F1F5F9] [&>div]:bg-gradient-to-r [&>div]:from-[#00FFA3] [&>div]:via-[#00E5FF] [&>div]:to-[#A374FF]"
+                />
+                <div className="text-sm text-[#64748B]">
+                  Time remaining: {task.timeLeft}
+                </div>
+                {task.details.startTime && (
+                  <div className="text-sm text-[#64748B]">
+                    Started: {new Date(task.details.startTime).toLocaleString()}
+                  </div>
+                )}
+                {task.details.endTime && (
+                  <div className="text-sm text-[#64748B]">
+                    Completed: {new Date(task.details.endTime).toLocaleString()}
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Brain className="h-4 w-4 text-[#00E5FF]" />
+                  <span className="text-sm text-[#64748B]">Model:</span>
+                  <span className="text-sm text-[#334155]">{task.model}</span>
+                </div>
                 <div className="flex items-center gap-2">
                   <Database className="h-4 w-4 text-[#00FFA3]" />
                   <span className="text-sm text-[#64748B]">Dataset:</span>
@@ -449,21 +613,14 @@ export default function TaskDetailsPage() {
                   </span>
                 </div>
               </>
-            )}
-            {task.type === "AI Predict" && task.details.prompt && (
-              <div className="flex items-center gap-2">
-                <Terminal className="h-4 w-4 text-[#00FFA3]" />
-                <span className="text-sm text-[#64748B]">Prompt:</span>
-                <span className="text-sm text-[#334155]">
-                  {task.details.prompt}
-                </span>
-              </div>
+            ) : (
+              renderPredictionInterface()
             )}
           </CardContent>
         </Card>
 
         {/* Resource Usage Card */}
-        <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)] md:col-span-2">
+        <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
           <CardHeader>
             <CardTitle className="text-lg text-[#334155]">
               Resource Usage
@@ -580,118 +737,6 @@ export default function TaskDetailsPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Training Metrics Card (only for AI Training tasks) */}
-        {task.type === "AI Training" && (
-          <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)] md:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-lg text-[#334155]">
-                Training Metrics
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={trainingMetrics}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E8EFFF" />
-                    <XAxis dataKey="epoch" stroke="#64748B" fontSize={12} />
-                    <YAxis stroke="#64748B" fontSize={12} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "white",
-                        border: "1px solid #E8EFFF",
-                        borderRadius: "8px",
-                      }}
-                      labelStyle={{ color: "#334155" }}
-                    />
-                    <Legend verticalAlign="top" height={36} iconType="circle" />
-                    <Line
-                      type="monotone"
-                      dataKey="loss"
-                      name="Training Loss"
-                      stroke="#FF6B6B"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="accuracy"
-                      name="Training Accuracy"
-                      stroke="#00FFA3"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="val_loss"
-                      name="Validation Loss"
-                      stroke="#FFD93D"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="val_accuracy"
-                      name="Validation Accuracy"
-                      stroke="#00E5FF"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#F8FAFC] p-4 rounded-lg">
-                  <div className="text-sm text-[#64748B] mb-2">Training</div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="text-xs text-[#64748B]">Loss</div>
-                      <div className="text-sm text-[#334155] font-medium">
-                        {trainingMetrics[
-                          trainingMetrics.length - 1
-                        ].loss.toFixed(4)}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-[#64748B]">Accuracy</div>
-                      <div className="text-sm text-[#334155] font-medium">
-                        {(
-                          trainingMetrics[trainingMetrics.length - 1].accuracy *
-                          100
-                        ).toFixed(2)}
-                        %
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-[#F8FAFC] p-4 rounded-lg">
-                  <div className="text-sm text-[#64748B] mb-2">Validation</div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="text-xs text-[#64748B]">Loss</div>
-                      <div className="text-sm text-[#334155] font-medium">
-                        {trainingMetrics[
-                          trainingMetrics.length - 1
-                        ].val_loss.toFixed(4)}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-[#64748B]">Accuracy</div>
-                      <div className="text-sm text-[#334155] font-medium">
-                        {(
-                          trainingMetrics[trainingMetrics.length - 1]
-                            .val_accuracy * 100
-                        ).toFixed(2)}
-                        %
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Update logs container with class name for auto scroll */}
         {logs.length > 0 && (

@@ -115,8 +115,8 @@ export default function ModelPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
           <DialogHeader>
-            <DialogTitle className="text-xl bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-              Upload Model
+            <DialogTitle className="text-xl text-blue-500">
+              Upload New Model
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">

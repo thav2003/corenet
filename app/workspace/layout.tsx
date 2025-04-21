@@ -18,9 +18,7 @@ const WorkspaceLayout = ({ children }: { children: React.ReactNode }) => {
                   height={32}
                   className="rounded-lg"
                 />
-                <h2 className="text-lg font-semibold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-                  CoreNet
-                </h2>
+                <h2 className="text-lg font-semibold text-blue-500">CoreNet</h2>
               </div>
             </div>
             <WorkspaceNav />

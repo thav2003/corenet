@@ -51,10 +51,10 @@ export function WorkspaceNav() {
           <Link key={item.href} href={item.href}>
             <Button
               variant="ghost"
-              className={`w-full justify-start gap-2 ${
+              className={`w-full justify-start gap-2 hover:bg-transparent active:bg-transparent ${
                 isActive
-                  ? "bg-gradient-to-r from-[#00FFA3]/10 via-[#00E5FF]/10 to-[#A374FF]/10 text-[#00E5FF]"
-                  : "text-[#64748B] hover:text-[#00E5FF] hover:bg-gradient-to-r hover:from-[#00FFA3]/5 hover:via-[#00E5FF]/5 hover:to-[#A374FF]/5"
+                  ? "bg-blue-50 text-blue-500 hover:bg-blue-50 hover:text-blue-500"
+                  : "text-[#64748B] hover:bg-blue-50/50 hover:text-blue-500"
               }`}
             >
               {item.icon}
