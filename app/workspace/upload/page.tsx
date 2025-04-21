@@ -92,16 +92,19 @@ export default function ModelPage() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {models.map((model) => (
-          <Card key={model.id} className="bg-black/50 border-[#A374FF]/20">
+          <Card
+            key={model.id}
+            className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all"
+          >
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg text-white flex items-center gap-2">
+              <CardTitle className="text-lg text-[#334155] flex items-center gap-2">
                 {getStatusIcon(model.status)}
                 {model.name}
               </CardTitle>
-              <span className="text-xs text-gray-400">{model.type}</span>
+              <span className="text-xs text-[#64748B]">{model.type}</span>
             </CardHeader>
             <CardContent>
-              <div className="flex justify-between text-sm text-gray-300">
+              <div className="flex justify-between text-sm text-[#64748B]">
                 <span>Date: {model.date}</span>
                 <span className="capitalize">{model.status}</span>
               </div>
@@ -110,10 +113,10 @@ export default function ModelPage() {
         ))}
       </div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-black/90 border-[#A374FF]/20 text-white">
+        <DialogContent className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
           <DialogHeader>
-            <DialogTitle className="text-xl bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-              Upload Model
+            <DialogTitle className="text-xl text-blue-500">
+              Upload New Model
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -121,25 +124,25 @@ export default function ModelPage() {
               placeholder="Model Name"
               value={uploadName}
               onChange={(e) => setUploadName(e.target.value)}
-              className="bg-black/30 border-[#A374FF]/20 text-white"
+              className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] placeholder-[#64748B]"
             />
             <Input
               placeholder="Model Type (e.g. Vision, NLP, ... )"
               value={uploadType}
               onChange={(e) => setUploadType(e.target.value)}
-              className="bg-black/30 border-[#A374FF]/20 text-white"
+              className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] placeholder-[#64748B]"
             />
             <input
               type="file"
               accept=".pt,.onnx,.h5,.pb,.zip,.tar,.tar.gz"
               onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-              className="text-gray-300"
+              className="text-[#64748B]"
             />
           </div>
           <DialogFooter>
             <Button
               variant="outline"
-              className="border-[#A374FF]/20 hover:border-[#A374FF] hover:bg-[#A374FF]/10 text-gray-300"
+              className="border-[#E8EFFF] hover:border-[#A374FF] hover:bg-[#A374FF]/10 text-[#64748B]"
               onClick={() => setIsDialogOpen(false)}
             >
               Cancel

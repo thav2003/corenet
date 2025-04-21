@@ -414,58 +414,59 @@ export default function ComputePage() {
     };
 
     return (
-      <Card className="bg-black/50 border-[#A374FF]/20 hover:border-[#A374FF]/40 transition-all">
+      <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              {getIcon(type)}
-              <CardTitle className="text-lg text-white">
+            <div>
+              <CardTitle className="text-lg text-[#334155]">
                 {resource.type}
               </CardTitle>
+              <CardDescription className="text-[#64748B]">
+                {resource.description}
+              </CardDescription>
             </div>
             <div className="p-2 rounded-full bg-gradient-to-r from-[#00FFA3]/10 via-[#00E5FF]/10 to-[#A374FF]/10">
-              <Gauge className="h-4 w-4 text-[#00E5FF]" />
+              {getIcon(type)}
             </div>
           </div>
-          <CardDescription className="text-gray-300">
-            {resource.description}
-          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm text-gray-300">
-              <span>Resource Usage</span>
-              <span>{usagePercentage.toFixed(1)}%</span>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-[#64748B]">Total Units</span>
+                <span className="text-[#334155]">{resource.total} CU</span>
+              </div>
+              <Progress
+                value={(resource.used / resource.total) * 100}
+                className="h-1 bg-[#F1F5F9] [&>div]:bg-gradient-to-r [&>div]:from-[#00FFA3] [&>div]:via-[#00E5FF] [&>div]:to-[#A374FF]"
+              />
+              <div className="flex justify-between text-sm">
+                <span className="text-[#64748B]">Used</span>
+                <span className="text-[#334155]">{resource.used} CU</span>
+              </div>
             </div>
-            <Progress
-              value={usagePercentage}
-              className="h-2 bg-black/50 [&>div]:bg-gradient-to-r [&>div]:from-[#00FFA3] [&>div]:via-[#00E5FF] [&>div]:to-[#A374FF]"
-            />
-            <div className="flex justify-between text-sm text-gray-300">
-              <span>Used: {resource.used} CU</span>
-              <span>Total: {resource.total} CU</span>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="text-sm text-gray-300">
-              Active Tasks: {resource.tasks}
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {resource.features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="text-xs text-gray-300 bg-black/30 p-2 rounded-lg"
-                >
-                  {feature}
-                </div>
-              ))}
+            <div className="space-y-2">
+              <div className="text-sm text-[#64748B]">
+                Active Tasks: {resource.tasks}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {resource.features.map((feature, index) => (
+                  <div
+                    key={index}
+                    className="text-xs text-[#64748B] bg-[#F8FAFC] p-2 rounded-lg"
+                  >
+                    {feature}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button
             variant="outline"
-            className="border-[#A374FF]/20 hover:border-[#A374FF] hover:bg-[#A374FF]/10 text-gray-300"
+            className="border-[#E8EFFF] hover:border-[#A374FF] hover:bg-[#A374FF]/10 text-[#64748B]"
             onClick={() => {
               setSelectedResource(resource);
               setResourceAllocation(resource.used);
@@ -500,9 +501,7 @@ export default function ComputePage() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-          {value}
-        </div>
+        <div className="text-2xl font-bold text-blue-500">{value}</div>
         <p className="text-xs text-gray-300 mt-1">{description}</p>
       </CardContent>
     </Card>
@@ -533,10 +532,12 @@ export default function ComputePage() {
   const TaskRow = ({ task }: { task: ComputeTask }) => {
     return (
       <TableRow
-        className="cursor-pointer hover:bg-black/30"
+        className="cursor-pointer hover:bg-[#F8FAFC]"
         onClick={() => router.push(`/workspace/${task.id}`)}
       >
-        <TableCell className="font-medium text-white">{task.name}</TableCell>
+        <TableCell className="font-medium text-[#334155]">
+          {task.name}
+        </TableCell>
         <TableCell>
           <Badge
             variant="outline"
@@ -546,23 +547,25 @@ export default function ComputePage() {
             <span className="ml-1 capitalize">{task.status}</span>
           </Badge>
         </TableCell>
-        <TableCell>{task.type}</TableCell>
+        <TableCell className="text-[#334155]">{task.type}</TableCell>
         <TableCell>
           <div className="flex items-center gap-2">
             <Progress
               value={task.progress}
-              className="h-1 w-20 bg-black/50 [&>div]:bg-gradient-to-r [&>div]:from-[#00FFA3] [&>div]:via-[#00E5FF] [&>div]:to-[#A374FF]"
+              className="h-1 w-20 bg-[#F1F5F9] [&>div]:bg-gradient-to-r [&>div]:from-[#00FFA3] [&>div]:via-[#00E5FF] [&>div]:to-[#A374FF]"
             />
-            <span className="text-xs text-gray-300">{task.progress}%</span>
+            <span className="text-xs text-[#64748B]">{task.progress}%</span>
           </div>
         </TableCell>
-        <TableCell>{task.computeUnits} CU</TableCell>
-        <TableCell>{task.memory} GB</TableCell>
-        <TableCell>{task.gpu ? "Yes" : "No"}</TableCell>
-        <TableCell className="text-gray-300">
+        <TableCell className="text-[#334155]">{task.computeUnits} CU</TableCell>
+        <TableCell className="text-[#334155]">{task.memory} GB</TableCell>
+        <TableCell className="text-[#334155]">
+          {task.gpu ? "Yes" : "No"}
+        </TableCell>
+        <TableCell className="text-[#64748B]">
           {formatDate(task.startTime)}
         </TableCell>
-        <TableCell className="text-gray-300">
+        <TableCell className="text-[#64748B]">
           {formatDate(task.estimatedEndTime)}
         </TableCell>
         <TableCell>
@@ -570,7 +573,7 @@ export default function ComputePage() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-8 w-8 p-0 text-gray-300 hover:text-white"
+                className="h-8 w-8 p-0 text-[#64748B] hover:text-[#334155]"
               >
                 <span className="sr-only">Open menu</span>
                 <ChevronDown className="h-4 w-4" />
@@ -578,10 +581,10 @@ export default function ComputePage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-black/90 border-[#A374FF]/20"
+              className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
             >
               <DropdownMenuItem
-                className="text-gray-300 hover:text-white hover:bg-[#A374FF]/10"
+                className="text-[#64748B] hover:text-[#334155] hover:bg-[#A374FF]/10"
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push(`/workspace/${task.id}`);
@@ -591,7 +594,7 @@ export default function ComputePage() {
                 View Details
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="text-gray-300 hover:text-white hover:bg-[#A374FF]/10"
+                className="text-[#64748B] hover:text-[#334155] hover:bg-[#A374FF]/10"
                 onClick={(e) => {
                   e.stopPropagation();
                   // Pause task logic
@@ -601,7 +604,7 @@ export default function ComputePage() {
                 Pause Task
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="text-gray-300 hover:text-white hover:bg-[#A374FF]/10"
+                className="text-[#64748B] hover:text-[#334155] hover:bg-[#A374FF]/10"
                 onClick={(e) => {
                   e.stopPropagation();
                   // Download results logic
@@ -611,7 +614,7 @@ export default function ComputePage() {
                 Download Results
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="text-gray-300 hover:text-white hover:bg-[#A374FF]/10"
+                className="text-[#64748B] hover:text-[#334155] hover:bg-[#A374FF]/10"
                 onClick={(e) => {
                   e.stopPropagation();
                   // Share task logic
@@ -621,7 +624,7 @@ export default function ComputePage() {
                 Share Task
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                className="text-red-400 hover:text-red-500 hover:bg-red-50"
                 onClick={(e) => {
                   e.stopPropagation();
                   // Cancel task logic
@@ -641,9 +644,7 @@ export default function ComputePage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
-            Compute Resources
-          </h1>
+          <h1 className="text-2xl font-bold text-blue-500">Compute</h1>
           <p className="text-gray-300 text-sm mt-1">
             Manage and monitor your CoreNet compute resources
           </p>
@@ -651,56 +652,104 @@ export default function ComputePage() {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="bg-black/50 border-[#A374FF]/20">
+        <TabsList className="bg-[#F8FAFC] border border-[#E8EFFF] p-1">
           <TabsTrigger
             value="overview"
-            className="data-[state=active]:bg-[#A374FF]/20 data-[state=active]:text-white"
+            className="text-[#64748B] hover:text-[#334155] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/10 data-[state=active]:via-[#00E5FF]/10 data-[state=active]:to-[#A374FF]/10 data-[state=active]:text-[#334155] hover:bg-[#A374FF]/10 transition-colors"
           >
             Overview
           </TabsTrigger>
           <TabsTrigger
             value="tasks"
-            className="data-[state=active]:bg-[#A374FF]/20 data-[state=active]:text-white"
+            className="text-[#64748B] hover:text-[#334155] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/10 data-[state=active]:via-[#00E5FF]/10 data-[state=active]:to-[#A374FF]/10 data-[state=active]:text-[#334155] hover:bg-[#A374FF]/10 transition-colors"
           >
             Tasks
           </TabsTrigger>
           <TabsTrigger
             value="analytics"
-            className="data-[state=active]:bg-[#A374FF]/20 data-[state=active]:text-white"
+            className="text-[#64748B] hover:text-[#334155] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/10 data-[state=active]:via-[#00E5FF]/10 data-[state=active]:to-[#A374FF]/10 data-[state=active]:text-[#334155] hover:bg-[#A374FF]/10 transition-colors"
           >
             Analytics
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
+        <TabsContent value="overview" className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatsCard
-              title="Total Compute Units"
-              value="2,600"
-              icon={<Cpu className="h-4 w-4 text-[#00E5FF]" />}
-              description="Available across all compute types"
-            />
-            <StatsCard
-              title="Active Tasks"
-              value="40"
-              icon={<BarChart3 className="h-4 w-4 text-[#00FFA3]" />}
-              description="Currently running compute tasks"
-            />
-            <StatsCard
-              title="Resource Usage"
-              value="61.5%"
-              icon={<Gauge className="h-4 w-4 text-[#A374FF]" />}
-              description="Average utilization across resources"
-            />
-            <StatsCard
-              title="Total Tasks"
-              value="156"
-              icon={<Database className="h-4 w-4 text-[#00E5FF]" />}
-              description="Tasks completed this month"
-            />
+            <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-sm font-medium text-[#64748B]">
+                    Total Compute Units
+                  </CardTitle>
+                  <div className="p-2 rounded-full bg-gradient-to-r from-[#00FFA3]/10 via-[#00E5FF]/10 to-[#A374FF]/10">
+                    <Cpu className="h-4 w-4 text-[#00E5FF]" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-500">2,600</div>
+                <p className="text-xs text-[#64748B] mt-1">
+                  Available across all compute types
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-sm font-medium text-[#64748B]">
+                    Active Tasks
+                  </CardTitle>
+                  <div className="p-2 rounded-full bg-gradient-to-r from-[#00FFA3]/10 via-[#00E5FF]/10 to-[#A374FF]/10">
+                    <BarChart3 className="h-4 w-4 text-[#00FFA3]" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-500">40</div>
+                <p className="text-xs text-[#64748B] mt-1">
+                  Currently running compute tasks
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-sm font-medium text-[#64748B]">
+                    Resource Usage
+                  </CardTitle>
+                  <div className="p-2 rounded-full bg-gradient-to-r from-[#00FFA3]/10 via-[#00E5FF]/10 to-[#A374FF]/10">
+                    <Gauge className="h-4 w-4 text-[#A374FF]" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-500">61.5%</div>
+                <p className="text-xs text-[#64748B] mt-1">
+                  Average utilization across resources
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-sm font-medium text-[#64748B]">
+                    Total Tasks
+                  </CardTitle>
+                  <div className="p-2 rounded-full bg-gradient-to-r from-[#00FFA3]/10 via-[#00E5FF]/10 to-[#A374FF]/10">
+                    <Database className="h-4 w-4 text-[#00E5FF]" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-500">156</div>
+                <p className="text-xs text-[#64748B] mt-1">
+                  Tasks completed this month
+                </p>
+              </CardContent>
+            </Card>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <ResourceCard
               resource={computeResources.aiCompute}
               type="aiCompute"
@@ -719,9 +768,9 @@ export default function ComputePage() {
             />
           </div>
 
-          <Card className="bg-black/50 border-[#A374FF]/20">
+          <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
             <CardHeader>
-              <CardTitle className="text-lg text-white">
+              <CardTitle className="text-lg text-[#334155]">
                 Resource Usage Over Time
               </CardTitle>
             </CardHeader>
@@ -730,21 +779,21 @@ export default function ComputePage() {
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <Brain className="h-4 w-4 text-[#00E5FF]" />
-                    <span className="text-sm text-gray-300">AI Compute</span>
+                    <span className="text-sm text-[#64748B]">AI Compute</span>
                   </div>
                   <ResourceChart resource={computeResources.aiCompute} />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <Shield className="h-4 w-4 text-[#00FFA3]" />
-                    <span className="text-sm text-gray-300">ZK Compute</span>
+                    <span className="text-sm text-[#64748B]">ZK Compute</span>
                   </div>
                   <ResourceChart resource={computeResources.zkCompute} />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <Zap className="h-4 w-4 text-[#A374FF]" />
-                    <span className="text-sm text-gray-300">
+                    <span className="text-sm text-[#64748B]">
                       MEV Optimization
                     </span>
                   </div>
@@ -753,7 +802,7 @@ export default function ComputePage() {
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <Database className="h-4 w-4 text-[#00E5FF]" />
-                    <span className="text-sm text-gray-300">
+                    <span className="text-sm text-[#64748B]">
                       Data Processing
                     </span>
                   </div>
@@ -765,16 +814,16 @@ export default function ComputePage() {
         </TabsContent>
 
         <TabsContent value="tasks" className="space-y-6">
-          <Card className="bg-black/50 border-[#A374FF]/20">
+          <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle className="text-lg text-white">
+                <CardTitle className="text-lg text-[#334155]">
                   Active Tasks
                 </CardTitle>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-[#A374FF]/20 hover:border-[#A374FF] hover:bg-[#A374FF]/10 text-gray-300"
+                  className="border-[#E8EFFF] hover:border-[#A374FF] hover:bg-[#A374FF]/10 text-[#64748B]"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh
@@ -784,60 +833,81 @@ export default function ComputePage() {
             <CardContent>
               <div className="flex flex-col md:flex-row gap-4 mb-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-[#64748B]" />
                   <Input
                     placeholder="Search tasks..."
-                    className="pl-8 bg-black/30 border-[#A374FF]/20 text-white"
+                    className="pl-8 bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] placeholder-[#64748B]"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
                 <div className="flex gap-2">
                   <Select value={filterType} onValueChange={setFilterType}>
-                    <SelectTrigger className="w-[180px] bg-black/30 border-[#A374FF]/20 text-gray-300">
+                    <SelectTrigger className="w-[180px] bg-[#F8FAFC] border-[#E8EFFF] text-[#334155]">
                       <Filter className="h-4 w-4 mr-2" />
                       <SelectValue placeholder="Filter by type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-black/90 border-[#A374FF]/20">
-                      <SelectItem value="all" className="text-gray-300">
+                    <SelectContent className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+                      <SelectItem
+                        value="all"
+                        className="text-[#64748B] hover:text-[#334155]"
+                      >
                         All Types
                       </SelectItem>
-                      <SelectItem value="AI Compute" className="text-gray-300">
+                      <SelectItem
+                        value="AI Compute"
+                        className="text-[#64748B] hover:text-[#334155]"
+                      >
                         AI Compute
                       </SelectItem>
-                      <SelectItem value="ZK Compute" className="text-gray-300">
+                      <SelectItem
+                        value="ZK Compute"
+                        className="text-[#64748B] hover:text-[#334155]"
+                      >
                         ZK Compute
                       </SelectItem>
                       <SelectItem
                         value="MEV Optimization"
-                        className="text-gray-300"
+                        className="text-[#64748B] hover:text-[#334155]"
                       >
                         MEV Optimization
                       </SelectItem>
                       <SelectItem
                         value="Data Processing"
-                        className="text-gray-300"
+                        className="text-[#64748B] hover:text-[#334155]"
                       >
                         Data Processing
                       </SelectItem>
                     </SelectContent>
                   </Select>
                   <Select value={filterStatus} onValueChange={setFilterStatus}>
-                    <SelectTrigger className="w-[180px] bg-black/30 border-[#A374FF]/20 text-gray-300">
+                    <SelectTrigger className="w-[180px] bg-[#F8FAFC] border-[#E8EFFF] text-[#334155]">
                       <Filter className="h-4 w-4 mr-2" />
                       <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
-                    <SelectContent className="bg-black/90 border-[#A374FF]/20">
-                      <SelectItem value="all" className="text-gray-300">
+                    <SelectContent className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+                      <SelectItem
+                        value="all"
+                        className="text-[#64748B] hover:text-[#334155]"
+                      >
                         All Statuses
                       </SelectItem>
-                      <SelectItem value="running" className="text-gray-300">
+                      <SelectItem
+                        value="running"
+                        className="text-[#64748B] hover:text-[#334155]"
+                      >
                         Running
                       </SelectItem>
-                      <SelectItem value="queued" className="text-gray-300">
+                      <SelectItem
+                        value="queued"
+                        className="text-[#64748B] hover:text-[#334155]"
+                      >
                         Queued
                       </SelectItem>
-                      <SelectItem value="completed" className="text-gray-300">
+                      <SelectItem
+                        value="completed"
+                        className="text-[#64748B] hover:text-[#334155]"
+                      >
                         Completed
                       </SelectItem>
                     </SelectContent>
@@ -845,74 +915,24 @@ export default function ComputePage() {
                 </div>
               </div>
 
-              <div className="rounded-md border border-[#A374FF]/20">
+              <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-[#A374FF]/20 hover:bg-transparent">
-                      <TableHead
-                        className="text-gray-300 cursor-pointer"
-                        onClick={() => handleSort("name")}
-                      >
-                        <div className="flex items-center">
-                          Name
-                          {sortField === "name" &&
-                            (sortDirection === "asc" ? (
-                              <ChevronUp className="h-4 w-4 ml-1" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 ml-1" />
-                            ))}
-                        </div>
+                    <TableRow className="hover:bg-[#F8FAFC] border-[#E8EFFF]">
+                      <TableHead className="text-[#64748B]">Name</TableHead>
+                      <TableHead className="text-[#64748B]">Status</TableHead>
+                      <TableHead className="text-[#64748B]">Type</TableHead>
+                      <TableHead className="text-[#64748B]">Progress</TableHead>
+                      <TableHead className="text-[#64748B]">Compute</TableHead>
+                      <TableHead className="text-[#64748B]">Memory</TableHead>
+                      <TableHead className="text-[#64748B]">GPU</TableHead>
+                      <TableHead className="text-[#64748B]">
+                        Start Time
                       </TableHead>
-                      <TableHead className="text-gray-300">Status</TableHead>
-                      <TableHead className="text-gray-300">Type</TableHead>
-                      <TableHead
-                        className="text-gray-300 cursor-pointer"
-                        onClick={() => handleSort("progress")}
-                      >
-                        <div className="flex items-center">
-                          Progress
-                          {sortField === "progress" &&
-                            (sortDirection === "asc" ? (
-                              <ChevronUp className="h-4 w-4 ml-1" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 ml-1" />
-                            ))}
-                        </div>
-                      </TableHead>
-                      <TableHead
-                        className="text-gray-300 cursor-pointer"
-                        onClick={() => handleSort("computeUnits")}
-                      >
-                        <div className="flex items-center">
-                          Compute Units
-                          {sortField === "computeUnits" &&
-                            (sortDirection === "asc" ? (
-                              <ChevronUp className="h-4 w-4 ml-1" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 ml-1" />
-                            ))}
-                        </div>
-                      </TableHead>
-                      <TableHead className="text-gray-300">Memory</TableHead>
-                      <TableHead className="text-gray-300">GPU</TableHead>
-                      <TableHead
-                        className="text-gray-300 cursor-pointer"
-                        onClick={() => handleSort("startTime")}
-                      >
-                        <div className="flex items-center">
-                          Start Time
-                          {sortField === "startTime" &&
-                            (sortDirection === "asc" ? (
-                              <ChevronUp className="h-4 w-4 ml-1" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 ml-1" />
-                            ))}
-                        </div>
-                      </TableHead>
-                      <TableHead className="text-gray-300">
+                      <TableHead className="text-[#64748B]">
                         Est. End Time
                       </TableHead>
-                      <TableHead className="text-gray-300 w-10"></TableHead>
+                      <TableHead className="text-[#64748B]"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -926,15 +946,15 @@ export default function ComputePage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
-          <Card className="bg-black/50 border-[#A374FF]/20">
+        <TabsContent value="analytics" className="mt-4">
+          <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
             <CardHeader>
-              <CardTitle className="text-lg text-white">
+              <CardTitle className="text-lg text-[#334155]">
                 Resource Analytics
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[400px] flex items-center justify-center text-gray-400">
+              <div className="h-[400px] flex items-center justify-center text-[#64748B]">
                 Analytics dashboard coming soon...
               </div>
             </CardContent>
@@ -949,7 +969,7 @@ export default function ComputePage() {
       >
         <DialogContent className="bg-black/90 border-[#A374FF]/20 text-white">
           <DialogHeader>
-            <DialogTitle className="text-xl bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
+            <DialogTitle className="text-xl text-blue-500">
               Manage {selectedResource?.type} Resources
             </DialogTitle>
             <DialogDescription className="text-gray-300">

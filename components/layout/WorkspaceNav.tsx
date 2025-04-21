@@ -50,15 +50,18 @@ export function WorkspaceNav() {
   ];
 
   return (
-    <nav className="flex-1 px-2 space-y-1">
+    <nav className="flex-1 px-2 py-4 space-y-1">
       {menuItems.map((item) => {
         const isActive = pathname === item.href;
         return (
           <Link key={item.href} href={item.href}>
             <Button
               variant="ghost"
-              className="w-full justify-start gap-2 text-gray-400 hover:text-[#A374FF] hover:bg-[#A374FF]/10 data-[active=true]:bg-[#A374FF]/10 data-[active=true]:text-[#A374FF]"
-              data-active={isActive}
+              className={`w-full justify-start gap-2 hover:bg-transparent active:bg-transparent ${
+                isActive
+                  ? "bg-blue-50 text-blue-500 hover:bg-blue-50 hover:text-blue-500"
+                  : "text-[#64748B] hover:bg-blue-50/50 hover:text-blue-500"
+              }`}
             >
               {item.icon}
               {item.title}

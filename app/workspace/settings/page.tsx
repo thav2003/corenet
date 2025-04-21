@@ -62,7 +62,7 @@ export default function SettingsPage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
+          <h1 className="text-2xl font-bold text-blue-500">
             Workspace Settings
           </h1>
           <p className="text-gray-400 text-sm mt-1">
@@ -72,31 +72,31 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="notifications" className="w-full">
-        <TabsList className="bg-black/50 border border-[#A374FF]/20 p-1">
+        <TabsList className="bg-[#F8FAFC] border border-[#E8EFFF] p-1">
           <TabsTrigger
             value="notifications"
-            className="text-gray-400 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/30 data-[state=active]:via-[#00E5FF]/30 data-[state=active]:to-[#A374FF]/30 data-[state=active]:text-white hover:bg-[#A374FF]/20 transition-colors"
+            className="text-[#64748B] hover:text-[#334155] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/10 data-[state=active]:via-[#00E5FF]/10 data-[state=active]:to-[#A374FF]/10 data-[state=active]:text-[#334155] hover:bg-[#A374FF]/10 transition-colors"
           >
             <Bell className="h-4 w-4 mr-2" />
             Notifications
           </TabsTrigger>
           <TabsTrigger
             value="compute"
-            className="text-gray-400 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/30 data-[state=active]:via-[#00E5FF]/30 data-[state=active]:to-[#A374FF]/30 data-[state=active]:text-white hover:bg-[#A374FF]/20 transition-colors"
+            className="text-[#64748B] hover:text-[#334155] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/10 data-[state=active]:via-[#00E5FF]/10 data-[state=active]:to-[#A374FF]/10 data-[state=active]:text-[#334155] hover:bg-[#A374FF]/10 transition-colors"
           >
             <Cpu className="h-4 w-4 mr-2" />
             Compute
           </TabsTrigger>
           <TabsTrigger
             value="security"
-            className="text-gray-400 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/30 data-[state=active]:via-[#00E5FF]/30 data-[state=active]:to-[#A374FF]/30 data-[state=active]:text-white hover:bg-[#A374FF]/20 transition-colors"
+            className="text-[#64748B] hover:text-[#334155] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/10 data-[state=active]:via-[#00E5FF]/10 data-[state=active]:to-[#A374FF]/10 data-[state=active]:text-[#334155] hover:bg-[#A374FF]/10 transition-colors"
           >
             <Shield className="h-4 w-4 mr-2" />
             Security
           </TabsTrigger>
           <TabsTrigger
             value="billing"
-            className="text-gray-400 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/30 data-[state=active]:via-[#00E5FF]/30 data-[state=active]:to-[#A374FF]/30 data-[state=active]:text-white hover:bg-[#A374FF]/20 transition-colors"
+            className="text-[#64748B] hover:text-[#334155] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/10 data-[state=active]:via-[#00E5FF]/10 data-[state=active]:to-[#A374FF]/10 data-[state=active]:text-[#334155] hover:bg-[#A374FF]/10 transition-colors"
           >
             <Wallet className="h-4 w-4 mr-2" />
             Billing
@@ -104,18 +104,18 @@ export default function SettingsPage() {
         </TabsList>
 
         <TabsContent value="notifications" className="mt-4">
-          <Card className="bg-black/50 border-[#A374FF]/20">
+          <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
             <CardHeader>
-              <CardTitle className="text-white">
+              <CardTitle className="text-[#334155]">
                 Notification Preferences
               </CardTitle>
-              <CardDescription className="text-gray-300">
+              <CardDescription className="text-[#64748B]">
                 Configure how you want to receive notifications
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label htmlFor="email" className="text-gray-200">
+                <Label htmlFor="email" className="text-[#334155]">
                   Email Notifications
                 </Label>
                 <Switch
@@ -127,7 +127,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="push" className="text-gray-200">
+                <Label htmlFor="push" className="text-[#334155]">
                   Push Notifications
                 </Label>
                 <Switch
@@ -139,7 +139,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="taskUpdates" className="text-gray-200">
+                <Label htmlFor="taskUpdates" className="text-[#334155]">
                   Task Updates
                 </Label>
                 <Switch
@@ -151,7 +151,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="systemAlerts" className="text-gray-200">
+                <Label htmlFor="systemAlerts" className="text-[#334155]">
                   System Alerts
                 </Label>
                 <Switch
@@ -171,16 +171,16 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="compute" className="mt-4">
-          <Card className="bg-black/50 border-[#A374FF]/20">
+          <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
             <CardHeader>
-              <CardTitle className="text-white">Compute Settings</CardTitle>
-              <CardDescription className="text-gray-300">
+              <CardTitle className="text-[#334155]">Compute Settings</CardTitle>
+              <CardDescription className="text-[#64748B]">
                 Configure default compute resources
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="computeUnits" className="text-gray-200">
+                <Label htmlFor="computeUnits" className="text-[#334155]">
                   Default Compute Units
                 </Label>
                 <Input
@@ -194,13 +194,13 @@ export default function SettingsPage() {
                       Number(e.target.value)
                     )
                   }
-                  className="bg-black/50 border-[#A374FF]/20 text-white"
+                  className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155]"
                   min={100}
                   step={100}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="memory" className="text-gray-200">
+                <Label htmlFor="memory" className="text-[#334155]">
                   Default Memory (GB)
                 </Label>
                 <Input
@@ -214,13 +214,13 @@ export default function SettingsPage() {
                       Number(e.target.value)
                     )
                   }
-                  className="bg-black/50 border-[#A374FF]/20 text-white"
+                  className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155]"
                   min={1}
                   step={1}
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="autoScale" className="text-gray-200">
+                <Label htmlFor="autoScale" className="text-[#334155]">
                   Auto-scale Resources
                 </Label>
                 <Switch
@@ -232,7 +232,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="gpuEnabled" className="text-gray-200">
+                <Label htmlFor="gpuEnabled" className="text-[#334155]">
                   Enable GPU by Default
                 </Label>
                 <Switch
@@ -248,16 +248,18 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="security" className="mt-4">
-          <Card className="bg-black/50 border-[#A374FF]/20">
+          <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
             <CardHeader>
-              <CardTitle className="text-white">Security Settings</CardTitle>
-              <CardDescription className="text-gray-300">
+              <CardTitle className="text-[#334155]">
+                Security Settings
+              </CardTitle>
+              <CardDescription className="text-[#64748B]">
                 Manage your workspace security
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label htmlFor="twoFactor" className="text-gray-200">
+                <Label htmlFor="twoFactor" className="text-[#334155]">
                   Two-Factor Authentication
                 </Label>
                 <Switch
@@ -269,7 +271,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="ipWhitelist" className="text-gray-200">
+                <Label htmlFor="ipWhitelist" className="text-[#334155]">
                   IP Whitelist
                 </Label>
                 <Input
@@ -282,12 +284,12 @@ export default function SettingsPage() {
                       e.target.value
                     )
                   }
-                  className="bg-black/50 border-[#A374FF]/20 text-white"
+                  className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155]"
                   placeholder="Enter IP addresses (comma-separated)"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="sessionTimeout" className="text-gray-200">
+                <Label htmlFor="sessionTimeout" className="text-[#334155]">
                   Session Timeout (minutes)
                 </Label>
                 <Input
@@ -301,7 +303,7 @@ export default function SettingsPage() {
                       Number(e.target.value)
                     )
                   }
-                  className="bg-black/50 border-[#A374FF]/20 text-white"
+                  className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155]"
                   min={5}
                   step={5}
                 />
@@ -311,16 +313,16 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="billing" className="mt-4">
-          <Card className="bg-black/50 border-[#A374FF]/20">
+          <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
             <CardHeader>
-              <CardTitle className="text-white">Billing Settings</CardTitle>
-              <CardDescription className="text-gray-300">
+              <CardTitle className="text-[#334155]">Billing Settings</CardTitle>
+              <CardDescription className="text-[#64748B]">
                 Manage your billing preferences
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label htmlFor="autoRecharge" className="text-gray-200">
+                <Label htmlFor="autoRecharge" className="text-[#334155]">
                   Auto-recharge
                 </Label>
                 <Switch
@@ -332,7 +334,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="threshold" className="text-gray-200">
+                <Label htmlFor="threshold" className="text-[#334155]">
                   Recharge Threshold (SOL)
                 </Label>
                 <Input
@@ -346,7 +348,7 @@ export default function SettingsPage() {
                       Number(e.target.value)
                     )
                   }
-                  className="bg-black/50 border-[#A374FF]/20 text-white"
+                  className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155]"
                   min={0.1}
                   step={0.1}
                 />
