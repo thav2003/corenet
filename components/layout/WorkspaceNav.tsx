@@ -8,6 +8,7 @@ import {
   Cpu,
   Upload,
   ClipboardList,
+  House 
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -40,6 +41,11 @@ export function WorkspaceNav() {
       title: "Settings",
       icon: <Settings className="h-5 w-5" />,
       href: "/workspace/settings",
+    },
+    {
+      title: "Home",
+      icon: <House className="h-5 w-5" />,
+      href: "/",
     },
   ];
 

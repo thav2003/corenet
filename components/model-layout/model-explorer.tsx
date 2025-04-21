@@ -1,9 +1,7 @@
 "use client";
-
 import { useState, useEffect, useRef } from "react";
 import { Container } from "../ui/container";
 import { ModelGrid } from "./model-grid";
-import { FilterSidebar } from "./filter-sidebar";
 import { ToolBar } from "./toolbar";
 import { Pagination } from "./pagination";
 import SkeletonLoader from "../ui/skeleton";
@@ -23,99 +21,92 @@ interface HuggingFaceModel {
 
 type FetchResult = {
   models: HuggingFaceModel[];
-  nextCursor?: string;
+  totalPages: number;
 };
 
-async function fetchModels(
-  limit: number = 8,
-  cursor?: string
+async function fetchBasicModels(
+  page: number,
+  limit: number,
+  sort: string,
+  signal?: AbortSignal
 ): Promise<FetchResult> {
   const url = new URL("https://huggingface.co/api/models");
+  const offset = (page - 1) * limit;
+
+  url.searchParams.set("offset", offset.toString());
   url.searchParams.set("limit", limit.toString());
-  if (cursor) url.searchParams.set("cursor", cursor);
+  if (sort !== "all") url.searchParams.set("sort", sort);
 
-  const res = await fetch(url.toString());
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data: HuggingFaceModel[] = await res.json();
+  const response = await fetch(url.toString(), { signal });
 
-  const link = res.headers.get("Link") || "";
-  const match = link.match(/<[^>]*[?&]cursor=([^>]+)>;\s*rel="next"/);
-  const nextCursor = match ? decodeURIComponent(match[1]) : undefined;
+  if (!response.ok) {
+    throw new Error(`HTTP Error: ${response.status}`);
+  }
 
-  return { models: data, nextCursor };
+  const data = await response.json();
+  const totalPages = Math.ceil(Number(response.headers.get("X-Total-Count")) / limit) || 5;
+
+  return { models: data, totalPages };
 }
 
 export function ModelExplorer() {
   const PAGE_SIZE = 8;
-  const INITIAL_RETRY_DELAY = 3000;
-  const MAX_RETRIES = 3;
-
   const [modelData, setModelData] = useState<HuggingFaceModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [cursors, setCursors] = useState<Record<number, string | undefined>>({ 1: undefined });
-  const [retryCount, setRetryCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(5);
+  const [sortOption, setSortOption] = useState("all");
   
-  const isMounted = useRef(true);
-  const retryTimer = useRef<NodeJS.Timeout>(null);
+  const abortController = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    return () => {
-      isMounted.current = false;
-      if (retryTimer.current) clearTimeout(retryTimer.current);
-    };
-  }, []);
+    abortController.current = new AbortController();
+    
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  const loadData = async (page: number, isRetry: boolean = false) => {
-    try {
-      if (!isRetry) setLoading(true);
-      setError(null);
-      
-      const cursor = cursors[page];
-      const { models, nextCursor } = await fetchModels(PAGE_SIZE, cursor);
+        const { models, totalPages } = await fetchBasicModels(
+          currentPage,
+          PAGE_SIZE,
+          sortOption,
+          abortController.current?.signal // Add null check using optional chaining operator (?.)
+        );
 
-      if (isMounted.current) {
         setModelData(models);
-        setRetryCount(0);
-        
-        if (nextCursor) {
-          setCursors(prev => ({ 
-            ...prev,
-            [page + 1]: nextCursor 
-          }));
+        setTotalPages(totalPages);
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          setError(err.message || "Failed to load models");
         }
+      } finally {
+        setLoading(false);
       }
-    } catch (err: any) {
-      if (!isMounted.current) return;
+    };
 
-      const isBadRequest = err.message.includes('400');
-      
-      if (isBadRequest && retryCount < MAX_RETRIES) {
-        setRetryCount(prev => prev + 1);
-        retryTimer.current = setTimeout(() => {
-          loadData(page, true);
-        }, INITIAL_RETRY_DELAY * Math.pow(2, retryCount));
-      } else {
-        setError(err.message || "Failed to load models");
-        setRetryCount(0);
-      }
-    } finally {
-      if (isMounted.current && !error) setLoading(false);
+    loadData();
+
+    return () => {
+      abortController.current?.abort();
+    };
+  }, [currentPage, sortOption]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    // scroll smoothly back to top
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  useEffect(() => {
-    loadData(currentPage);
-  }, [currentPage]);
-
-  const handlePageChange = (newPage: number) => {
-    setRetryCount(0);
-    setCurrentPage(newPage);
+  const handleSortChange = (newSort: string) => {
+    setSortOption(newSort);
+    setCurrentPage(1);
   };
 
-  // Luôn hiển thị skeleton khi đang loading hoặc retrying
-  if (loading || (error?.includes('400') && retryCount < MAX_RETRIES)) {
+  if (loading) {
     return (
       <div className="text-center py-8">
         <SkeletonLoader />
@@ -127,6 +118,12 @@ export function ModelExplorer() {
     return (
       <div className="text-center py-8 text-red-500 space-y-4">
         <p>{error}</p>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={() => setCurrentPage(prev => prev)}
+        >
+          Try Again
+        </button>
       </div>
     );
   }
@@ -134,16 +131,12 @@ export function ModelExplorer() {
   return (
     <Container className="py-8">
       <div className="flex flex-col md:flex-row gap-8">
-        <aside className="w-full md:w-64 shrink-0">
-          <FilterSidebar />
-        </aside>
-
         <div className="flex-1">
-          <ToolBar />
+          <ToolBar sortOption={sortOption} onSortChange={handleSortChange} />
           <ModelGrid models={modelData} />
           <Pagination
             currentPage={currentPage}
-            totalPages={5}
+            totalPages={totalPages}
             onPageChange={handlePageChange}
           />
         </div>

@@ -28,7 +28,6 @@ export interface HuggingFaceModel {
   modelId: string;
   trendingScore: number;
   createdAt: string;
-  image?: string; // Thêm trường image tùy chọn
 }
 
 // Component card cho từng model
