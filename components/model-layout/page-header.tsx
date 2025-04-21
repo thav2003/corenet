@@ -40,7 +40,7 @@ export function PageHeader() {
         <div className="text-center max-w-4xl mx-auto">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-white drop-shadow-md">
-            Explore the AI ​​Model Warehouse
+            CoreNet AI Model Warehouse
             </h1>
           </motion.div>
 
