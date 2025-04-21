@@ -45,14 +45,18 @@ const models = [
 const baseSchema = z.object({
   name: z.string().min(1, "Task name is required"),
   type: z.enum(taskTypes),
-  model: z.string().min(1, "Model is required"),
   numGpus: z.number().min(1, "Must be at least 1"),
   vcpuPerGpu: z.number().min(1, "Must be at least 1"),
   ramPerGpu: z.number().min(1, "Must be at least 1"),
   diskSize: z.number().min(1, "Must be at least 1"),
 });
 
+const predictSchema = baseSchema.extend({
+  model: z.string().min(1, "Model is required"),
+});
+
 type BaseFormData = z.infer<typeof baseSchema>;
+type PredictFormData = z.infer<typeof predictSchema>;
 
 export function CreateTaskButton() {
   const [taskType, setTaskType] = React.useState<(typeof taskTypes)[number]>();
@@ -61,12 +65,13 @@ export function CreateTaskButton() {
   const [installCommand, setInstallCommand] = React.useState("");
   const [runCommand, setRunCommand] = React.useState("");
 
-  const form = useForm<BaseFormData>({
-    resolver: zodResolver(baseSchema),
+  const form = useForm<BaseFormData | PredictFormData>({
+    resolver: zodResolver(
+      taskType === "AI Predict" ? predictSchema : baseSchema
+    ),
     defaultValues: {
       name: "",
       type: undefined,
-      model: "",
       numGpus: 1,
       vcpuPerGpu: 1,
       ramPerGpu: 8,
@@ -74,7 +79,7 @@ export function CreateTaskButton() {
     },
   });
 
-  function onSubmit(values: BaseFormData) {
+  function onSubmit(values: BaseFormData | PredictFormData) {
     if (taskType === "AI Training") {
       if (!trainingScript) {
         form.setError("type", { message: "Training script is required" });
@@ -163,78 +168,42 @@ export function CreateTaskButton() {
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#334155]">
-                          Task Type
-                        </FormLabel>
-                        <Select
-                          onValueChange={(
-                            value: (typeof taskTypes)[number]
-                          ) => {
-                            field.onChange(value);
-                            handleTaskTypeChange(value);
-                          }}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="bg-[#F8FAFC] w-full border-[#E8EFFF] text-[#334155]">
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="bg-white border-[#E8EFFF]">
-                            {taskTypes.map((type) => (
-                              <SelectItem
-                                key={type}
-                                value={type}
-                                className="text-[#334155] focus:bg-[#F8FAFC] focus:text-[#334155]"
-                              >
-                                {type}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="model"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#334155]">Model</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="bg-[#F8FAFC] w-full border-[#E8EFFF] text-[#334155]">
-                              <SelectValue placeholder="Select model" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="bg-white border-[#E8EFFF]">
-                            {models.map((model) => (
-                              <SelectItem
-                                key={model}
-                                value={model}
-                                className="text-[#334155] focus:bg-[#F8FAFC] focus:text-[#334155]"
-                              >
-                                {model}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#334155]">
+                        Task Type
+                      </FormLabel>
+                      <Select
+                        onValueChange={(value: (typeof taskTypes)[number]) => {
+                          field.onChange(value);
+                          handleTaskTypeChange(value);
+                        }}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-[#F8FAFC] w-full border-[#E8EFFF] text-[#334155]">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white border-[#E8EFFF]">
+                          {taskTypes.map((type) => (
+                            <SelectItem
+                              key={type}
+                              value={type}
+                              className="text-[#334155] focus:bg-[#F8FAFC] focus:text-[#334155]"
+                            >
+                              {type}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -337,7 +306,7 @@ export function CreateTaskButton() {
                 </div>
               </div>
 
-              {/* Right Column - Training Config */}
+              {/* Right Column */}
               <div className="space-y-4">
                 {!taskType && (
                   <div className="h-full flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-[#E8EFFF] rounded-lg bg-[#F8FAFC]">
@@ -369,72 +338,101 @@ export function CreateTaskButton() {
                   </div>
                 )}
                 {taskType === "AI Training" && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-2">
-                      <Label>Training Script</Label>
-                      <Input
-                        type="file"
-                        accept=".py,.ipynb,.zip"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setTrainingScript(file);
-                          }
-                        }}
-                        className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] file:mr-4 file:px-4 
-                        file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#A374FF] 
-                        file:text-white hover:file:bg-[#B68FFF]"
-                      />
+                  <div className="space-y-6">
+                    <div className="pb-4 mb-2 border-b border-[#E8EFFF]">
+                      <h3 className="text-lg font-medium text-[#334155] mb-1">
+                        Training Configuration
+                      </h3>
+                      <p className="text-sm text-[#64748B]">
+                        Upload your training script and set up commands
+                      </p>
                     </div>
+                    <div className="grid grid-cols-1 gap-6">
+                      <div>
+                        <Label>Training Script</Label>
+                        <Input
+                          type="file"
+                          accept=".py,.ipynb,.zip"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setTrainingScript(file);
+                            }
+                          }}
+                          className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] file:mr-4 file:px-4 
+                          file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#A374FF] 
+                          file:text-white hover:file:bg-[#B68FFF]"
+                        />
+                      </div>
 
-                    <div className="col-span-2">
-                      <Label>Install Command</Label>
-                      <Input
-                        placeholder="pip install -r requirements.txt"
-                        className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] font-mono"
-                        value={installCommand}
-                        onChange={(e) => setInstallCommand(e.target.value)}
-                      />
-                    </div>
+                      <div>
+                        <Label>Install Command</Label>
+                        <Input
+                          placeholder="pip install -r requirements.txt"
+                          className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] font-mono"
+                          value={installCommand}
+                          onChange={(e) => setInstallCommand(e.target.value)}
+                        />
+                      </div>
 
-                    <div className="col-span-2">
-                      <Label>Run Command</Label>
-                      <Input
-                        placeholder="python train.py"
-                        className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] font-mono"
-                        value={runCommand}
-                        onChange={(e) => setRunCommand(e.target.value)}
-                      />
+                      <div>
+                        <Label>Run Command</Label>
+                        <Input
+                          placeholder="python train.py"
+                          className="bg-[#F8FAFC] border-[#E8EFFF] text-[#334155] font-mono"
+                          value={runCommand}
+                          onChange={(e) => setRunCommand(e.target.value)}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
                 {taskType === "AI Predict" && (
-                  <div className="h-full flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-[#E8EFFF] rounded-lg bg-[#F8FAFC]">
-                    <div className="mb-4">
-                      <svg
-                        width="64"
-                        height="64"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="mx-auto text-[#A374FF]"
-                      >
-                        <path
-                          d="M12 8V12L14 14M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3Z"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                  <div className="space-y-6">
+                    <div className="pb-4 mb-2 border-b border-[#E8EFFF]">
+                      <h3 className="text-lg font-medium text-[#334155] mb-1">
+                        Model Selection
+                      </h3>
+                      <p className="text-sm text-[#64748B]">
+                        Choose a pre-trained model for prediction
+                      </p>
                     </div>
-                    <h3 className="text-lg font-medium text-[#334155] mb-2">
-                      Prediction Task Selected
-                    </h3>
-                    <p className="text-sm text-[#64748B]">
-                      Configure your basic settings on the left to create a
-                      prediction task
-                    </p>
+                    <FormField
+                      control={form.control}
+                      name="model"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#334155]">
+                            Select Model
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="bg-[#F8FAFC] w-full border-[#E8EFFF] text-[#334155]">
+                                <SelectValue placeholder="Choose a model" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-white border-[#E8EFFF]">
+                              {models.map((model) => (
+                                <SelectItem
+                                  key={model}
+                                  value={model}
+                                  className="text-[#334155] focus:bg-[#F8FAFC] focus:text-[#334155]"
+                                >
+                                  {model}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormDescription className="text-[#64748B] text-sm">
+                            Select from our available pre-trained models
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 )}
               </div>
