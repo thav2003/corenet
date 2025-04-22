@@ -3,7 +3,7 @@ import { Logo } from "../icon";
 
 export default function Footer() {
   return (
-    <footer className="relative py-16 px-4 lg:px-6 border-t border-[#A374FF]/10">
+    <footer className="relative pt-16 px-4 lg:px-6 border-t border-[#A374FF]/10">
       <div className="absolute inset-0 bg-white">
         <div className="absolute inset-0 bg-gradient-to-t from-[#CEC9C9]/50 via-white/95 to-white"></div>
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
@@ -12,7 +12,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
           {/* Brand Column */}
           <div className="space-y-6">
-            <div className="flex items-center gap-2">
+            <a href="#" className="flex items-center gap-2">
               <Image
                 src={Logo || "/placeholder.svg"}
                 alt="CoreNet"
@@ -24,10 +24,9 @@ export default function Footer() {
               <span className="text-xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
                 CoreNet
               </span>
-            </div>
+            </a>
             <p className="text-gray-600 text-sm">
-              The next generation NFT platform powered by AI on Solana
-              blockchain.
+              Powering the Future of Modular Compute
             </p>
             <div className="flex gap-4">
               <a
@@ -70,38 +69,38 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-gray-800 font-semibold mb-6">Quick Links</h3>
+            <h3 className="text-gray-800 font-semibold mb-6">Ecosystem</h3>
             <ul className="space-y-4">
               <li>
                 <a
-                  href="#"
+                  href="/model"
                   className="text-gray-600 hover:text-[#00E5FF] transition-colors"
                 >
-                  Explore NFTs
+                  Models
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/workspace"
                   className="text-gray-600 hover:text-[#00E5FF] transition-colors"
                 >
-                  Create NFT
+                  WorkSpace
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/explorer"
                   className="text-gray-600 hover:text-[#00E5FF] transition-colors"
                 >
-                  Marketplace
+                  Explore
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/staking"
                   className="text-gray-600 hover:text-[#00E5FF] transition-colors"
                 >
-                  Collections
+                  Staking
                 </a>
               </li>
             </ul>
@@ -142,7 +141,7 @@ export default function Footer() {
                   href="#"
                   className="text-gray-600 hover:text-[#00FFA3] transition-colors"
                 >
-                  Newsletter
+                  Github
                 </a>
               </li>
             </ul>
@@ -169,7 +168,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-[#A374FF]/10">
+        <div className="mt-12 py-8 border-t border-[#A374FF]/10">
           <div className="flex flex-col md:flex-row justify-center items-center gap-4">
             <div className="text-gray-400 text-sm">
               © 2025 CoreNet. All rights reserved.
