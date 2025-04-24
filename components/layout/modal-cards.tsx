@@ -64,7 +64,7 @@ export function ModelCards({ className }: { className?: string }) {
   useEffect(() => {
     const loadModels = async () => {
       try {
-        const data = await fetchModels(8)
+        const data = await fetchModels(6)
         setModels(data)
       } catch (err) {
         setError("Failed to load models")
