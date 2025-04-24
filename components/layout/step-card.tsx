@@ -1,37 +1,35 @@
-import { motion } from "framer-motion";
-import { ArrowRightIcon } from "lucide-react";
+"use client"
+
+import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
 
 interface StepCardProps {
-  number: string;
-  title: string;
-  description: string;
+  number: string
+  title: string
+  description: string
+  className?: string
+  numberClassName?: string
+  titleClassName?: string
+  descriptionClassName?: string
 }
 
-export function StepCard({ number, title, description }: StepCardProps) {
+export function StepCard({
+  number,
+  title,
+  description,
+  className,
+  numberClassName,
+  titleClassName,
+  descriptionClassName,
+}: StepCardProps) {
   return (
     <motion.div
-      className="text-center"
-      whileHover={{ scale: 1.03 }}
-      transition={{ duration: 0.3 }}
+      className={cn("rounded-xl p-6 transition-all duration-300 h-full flex flex-col", className)}
+      whileHover={{ y: -5, transition: { duration: 0.2 } }}
     >
-      <motion.div
-        className="text-6xl font-thin text-white mb-4"
-        initial={{ opacity: 0, scale: 0.8 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        {number}
-      </motion.div>
-      <h3 className="text-xl font-semibold mb-3 text-[#0066ff]">{title}</h3>
-      <p className="text-gray-500 mb-4">{description}</p>
-      <motion.div
-        className="text-[#0066ff] inline-flex items-center"
-        whileHover={{ x: 5 }}
-        transition={{ duration: 0.2 }}
-      >
-        <ArrowRightIcon className="h-5 w-5" />
-      </motion.div>
+      <div className={cn("text-3xl font-bold mb-4", numberClassName)}>{number}</div>
+      <h3 className={cn("text-xl font-semibold mb-2", titleClassName)}>{title}</h3>
+      <p className={cn("text-sm", descriptionClassName)}>{description}</p>
     </motion.div>
   );
 }

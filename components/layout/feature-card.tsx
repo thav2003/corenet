@@ -1,12 +1,17 @@
-import { motion } from "framer-motion";
-import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+"use client"
+
+import type React from "react"
+
+import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
 
 interface FeatureCardProps {
-  icon: ReactNode;
-  title: string;
-  description: string;
-  className?: string;
+  icon: React.ReactNode
+  title: string
+  description: string
+  className?: string
+  titleClassName?: string
+  descriptionClassName?: string
 }
 
 export function FeatureCard({
@@ -14,23 +19,17 @@ export function FeatureCard({
   title,
   description,
   className,
+  titleClassName,
+  descriptionClassName,
 }: FeatureCardProps) {
   return (
     <motion.div
-      className={cn(
-        "p-6 rounded-lg border shadow-sm transition-all",
-        "bg-black/40 backdrop-blur-sm border-zinc-800/40",
-        "hover:border-zinc-700/70 hover:shadow-[0_8px_30px_rgba(255,255,255,0.15)]",
-        className
-      )}
-      whileHover={{
-        y: -5,
-        transition: { duration: 0.3 },
-      }}
+      className={cn("rounded-xl p-6 transition-all duration-300 h-full flex flex-col", className)}
+      whileHover={{ y: -5, transition: { duration: 0.2 } }}
     >
-      <div className="mb-4 text-3xl">{icon}</div>
-      <h3 className="text-lg font-semibold mb-2 text-white">{title}</h3>
-      <p className="text-gray-400 text-sm">{description}</p>
+      <div className="mb-4">{icon}</div>
+      <h3 className={cn("text-xl font-semibold mb-2", titleClassName)}>{title}</h3>
+      <p className={cn("text-sm", descriptionClassName)}>{description}</p>
     </motion.div>
   );
 }
