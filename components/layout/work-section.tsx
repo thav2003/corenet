@@ -1,5 +1,5 @@
-import { motion } from "framer-motion"
-import { StepCard } from "./step-card"
+import { motion } from "framer-motion";
+import { StepCard } from "./step-card";
 
 export function HowItWorksSection() {
   const containerVariants = {
@@ -11,7 +11,7 @@ export function HowItWorksSection() {
         delayChildren: 0.1,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -23,13 +23,18 @@ export function HowItWorksSection() {
         ease: "easeOut",
       },
     },
-  }
+  };
 
   return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-4 md:px-6">
+    <section className="relative py-20 bg-white">
+      <div className="absolute inset-0 bg-black">
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0066ff]/20 to-black"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
+      </div>
+
+      <div className=" relative container mx-auto px-4 md:px-6">
         <motion.h2
-          className="text-3xl font-bold text-center mb-12"
+          className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-[#A374FF] via-[#500ee9] to-[#0066ff] text-transparent bg-clip-text hover:from-[#ab4deb] hover:to-[#0066ff]"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -71,5 +76,5 @@ export function HowItWorksSection() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

@@ -75,7 +75,7 @@ export function ModelCards({ className }: { className?: string }) {
   useEffect(() => {
     const loadModels = async () => {
       try {
-        const data = await fetchModels(8);
+        const data = await fetchModels(6);
         setModels(data);
       } catch (err) {
         setError("Failed to load models");
@@ -99,34 +99,46 @@ export function ModelCards({ className }: { className?: string }) {
   }
 
   return (
-    <motion.div
-      className={cn("max-w-[1200px] mx-auto min-h-[800px]", className)}
-      variants={container}
-      initial="hidden"
-      animate="show"
-    >
+    <section className="relative py-16">
+      <div className="absolute inset-0 bg-black">
+        <div className="absolute inset-0 bg-gradient-to-bl from-black via-[#0066ff]/20 to-black"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
+      </div>
       <motion.div
-        className="items-center mb-8 mx-auto"
-        style={{
-          display: "flex",
-          justifyContent: "center !important",
-          width: "50%",
-        }}
-      >
-        <SearchBar />
-      </motion.div>
-
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12"
+        className={cn("relative px-36 min-h-[800px]", className)}
         variants={container}
         initial="hidden"
         animate="show"
       >
-        {models.map((model) => (
-          <ModelCard key={model._id} model={model} />
-        ))}
+        <motion.div className="text-center mb-8">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-[#A374FF] via-[#500ee9] to-[#0066ff] text-transparent bg-clip-text">
+            Search Models
+          </h2>
+        </motion.div>
+
+        <motion.div
+          className="items-center mb-8 mx-auto"
+          style={{
+            display: "flex",
+            justifyContent: "center !important",
+            width: "50%",
+          }}
+        >
+          <SearchBar />
+        </motion.div>
+
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 mb-12"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
+          {models.map((model) => (
+            <ModelCard key={model._id} model={model} />
+          ))}
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </section>
   );
 }
 
@@ -165,14 +177,15 @@ function ModelCard({ model }: { model: HuggingFaceModel }) {
 
   return (
     <motion.div
-      className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col h-auto"
+      style={{ boxShadow: "0 8px 30px rgba(255, 255, 255, 0.35)" }}
+      className="rounded-md border border-zinc-800/40 bg-black/40 p-5 transition-all duration-300 hover:border-zinc-700/70 hover:shadow-lg hover:shadow-white/20 backdrop-blur-sm"
       variants={{
         hidden: { opacity: 0, y: 20 },
         show: { opacity: 1, y: 0 },
       }}
       whileHover={{
         y: -5,
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 8px 30px rgba(255, 255, 255, 0.2)",
         transition: { duration: 0.2 },
       }}
       onHoverStart={() => setIsHovered(true)}
@@ -181,13 +194,13 @@ function ModelCard({ model }: { model: HuggingFaceModel }) {
       <div className="p-4 pb-0">
         <Link
           href={`https://huggingface.co/${model?.modelId}`}
-          className="text-blue-500 text-sm font-medium hover:underline"
+          className="text-[#0066ff] text-sm font-medium"
           target="_blank"
         >
           {model.pipeline_tag}
         </Link>
 
-        <div className="flex items-center mt-2 text-gray-600 text-sm">
+        <div className="flex items-center mt-2 text-white text-sm">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -209,51 +222,46 @@ function ModelCard({ model }: { model: HuggingFaceModel }) {
       </div>
 
       <div className="p-4 flex-grow flex flex-col">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 flex flex-wrap word-break">
+        <h3 className="text-lg font-semibold text-gray-100 mb-2 flex flex-wrap word-break">
           <Link
             href={`https://huggingface.co/${model?.modelId}`}
             target="_blank"
-            className="hover:text-blue-600 transition-colors"
+            className="hover:text-[#0040ff] text-[#0040ff] transition-colors"
           >
             {model.id}
           </Link>
         </h3>
 
-        <div className="flex items-center text-sm text-gray-600 mb-4">
-          <CalendarDays />
-          <span className="ml-1">{formatDate(model.createdAt)}</span>
-        </div>
-
         <div className="flex flex-wrap gap-2 mb-4 min-h-[32px]">
-          {model.tags.length < 10 ? (
+          {model.tags.length < 3 ? (
             model.tags.map((tag, index) => (
               <Badge
                 key={index}
-                className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200 mx-2"
+                className="bg-[#0040ff]/5 text-gray-200 hover:bg-[#0040ff]/10 border-[#0040ff]/20"
               >
                 {tag}
               </Badge>
             ))
           ) : (
             <div>
-              {model.tags.slice(0, 9).map((tag, index) => (
+              {model.tags.slice(0, 2).map((tag, index) => (
                 <Badge
                   key={index}
-                  className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200 "
+                  className="bg-[#0040ff]/5 text-gray-200 hover:bg-[#0040ff]/10 border-[#0040ff]/20"
                 >
                   {tag}
                 </Badge>
               ))}
-              <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200 ">
-                +{model.tags.length - 9} more
+              <Badge className="bg-[#0040ff]/5 text-gray-200 hover:bg-[#0040ff]/10 border-[#0040ff]/20">
+                +{model.tags.length - 2} more
               </Badge>
             </div>
           )}
         </div>
 
-        <div className="flex items-center text-gray-600 mb-4">
+        <div className="flex items-center text-white mb-4">
           <div className="flex items-center mr-4">
-            <StarIcon className="w-4 h-4 mr-1 text-blue-500" />
+            <StarIcon className="w-4 h-4 mr-1 text-[#0040ff]" />
             <span>{model.likes}</span>
           </div>
           <div className="flex items-center mr-4">
@@ -265,23 +273,23 @@ function ModelCard({ model }: { model: HuggingFaceModel }) {
             <span>{model.trendingScore || 0}</span>
           </div>
           <div className="ml-auto">
-            <ZapIcon className="w-4 h-4" />
+            <ZapIcon className="w-4 h-4 text-[#0040ff]" />
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-auto">
+        <div className="flex items-center justify-between pt-2 border-t border-[#0040ff]/10 mt-auto">
           <div className="flex space-x-2">
-            <button className="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+            <button className="h-8 w-8 inline-flex items-center justify-center rounded-md text-white transition-colors hover:bg-[#0040ff]/10 hover:text-[#0040ff]">
               <Share2Icon className="h-4 w-4" />
             </button>
-            <button className="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+            <button className="h-8 w-8 inline-flex items-center justify-center rounded-md text-white transition-colors hover:bg-[#0040ff]/10 hover:text-[#0040ff]">
               <BookmarkIcon className="h-4 w-4" />
             </button>
           </div>
           <Link
             href={`https://huggingface.co/${model?.modelId}`}
             target="_blank"
-            className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="inline-flex items-center justify-center rounded-md bg-[#0040ff] px-4 py-2 text-sm font-medium text-white shadow hover:bg-[#235af1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0040ff] focus-visible:ring-offset-2"
           >
             View
           </Link>

@@ -212,7 +212,7 @@ const WalletConnection = () => {
             <Button
               variant="default"
               size="sm"
-              className="cursor-pointer font-medium h-9 w-28 bg-[#A374FF] hover:bg-[#A374FF]/80 text-white hover:shadow-[0_0_15px_#A374FF40] transition-all"
+              className="font-medium h-9 w-28 bg-[#0040ff] hover:bg-[#235af1] text-white transition-all shadow-sm hover:shadow-[0_0_20px_rgba(0,64,255,0.4)] border border-[#0040ff] hover:border-[#235af1]"
             >
               <LogIn className="mr-2 h-4 w-4" />
               Login
@@ -229,7 +229,7 @@ const WalletConnection = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="font-medium h-9 w-28 border-[#A374FF]/20 hover:border-[#A374FF] hover:shadow-[0_0_15px_#A374FF40] transition-all bg-black/50 text-gray-300"
+                  className="font-medium h-9 w-28 bg-[#0040ff] hover:bg-[#235af1] text-white transition-all shadow-sm hover:shadow-[0_0_20px_rgba(0,64,255,0.4)] border border-[#0040ff] hover:border-[#235af1]"
                 >
                   <Wallet className="mr-2 h-4 w-4" />
                   {balance !== null ? (
@@ -239,7 +239,7 @@ const WalletConnection = () => {
                   )}
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="bg-black/95 border-[#A374FF]/20">
+              <DrawerContent className="bg-black/95 border-[#0040ff]/20">
                 <div className="flex flex-col h-full">
                   <div className="flex-1">
                     <DrawerHeader>
@@ -256,7 +256,7 @@ const WalletConnection = () => {
                         <h4 className="text-sm font-medium mb-2 text-gray-400">
                           Balance
                         </h4>
-                        <div className="text-2xl font-bold text-[#A374FF]">
+                        <div className="text-2xl font-bold text-[#0040ff]">
                           {balance !== null ? toFixed(balance, 4) : "0"} SOL
                         </div>
                       </div>
@@ -265,7 +265,7 @@ const WalletConnection = () => {
                         <h4 className="text-sm font-medium mb-2 text-gray-400">
                           Wallet Address
                         </h4>
-                        <div className="p-4 rounded-lg bg-black/50 border border-[#A374FF]/20 flex items-center justify-between break-all">
+                        <div className="p-4 rounded-lg bg-black/50 border border-[#0040ff]/20 flex items-center justify-between break-all">
                           <div className="text-sm text-gray-300">
                             {publicKey.toBase58()}
                           </div>
@@ -273,7 +273,7 @@ const WalletConnection = () => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 hover:bg-[#A374FF]/10 hover:text-[#A374FF]"
+                              className="h-8 w-8 hover:bg-[#0040ff]/10 hover:text-[#0040ff]"
                               onClick={copyAddress}
                             >
                               <Copy
@@ -286,7 +286,7 @@ const WalletConnection = () => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 hover:bg-[#A374FF]/10 hover:text-[#A374FF]"
+                              className="h-8 w-8 hover:bg-[#0040ff]/10 hover:text-[#0040ff]"
                               onClick={openExplorer}
                             >
                               <ExternalLink className="h-4 w-4 text-gray-400" />
@@ -308,7 +308,7 @@ const WalletConnection = () => {
                             {transactions.map((tx) => (
                               <div
                                 key={tx.transaction.signatures[0]}
-                                className="p-3 rounded-lg bg-black/50 border border-[#A374FF]/20 hover:border-[#A374FF] transition-all"
+                                className="p-3 rounded-lg bg-black/50 border border-[#0040ff]/20 hover:border-[#0040ff] transition-all"
                               >
                                 <div className="flex justify-between items-center">
                                   <div className="flex items-center gap-2">
@@ -337,7 +337,7 @@ const WalletConnection = () => {
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6 hover:bg-[#A374FF]/10 hover:text-[#A374FF]"
+                                    className="h-6 w-6 hover:bg-[#0040ff]/10 hover:text-[#0040ff]"
                                     onClick={() =>
                                       window.open(
                                         `https://explorer.solana.com/tx/${tx.transaction.signatures[0]}`,
@@ -365,7 +365,7 @@ const WalletConnection = () => {
                     </div>
                   </div>
 
-                  <div className="mt-auto p-4 border-t border-[#A374FF]/20">
+                  <div className="mt-auto p-4 border-t border-[#0040ff]/20">
                     <Button
                       variant="destructive"
                       className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 hover:text-red-400 border border-red-500/20 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]"
@@ -382,7 +382,7 @@ const WalletConnection = () => {
         )}
       </div>
 
-      <DialogContent className="sm:max-w-[425px] bg-black/95 border-[#A374FF]/20">
+      <DialogContent className="sm:max-w-[425px] bg-black/95 border-[#0040ff]/20">
         <DialogHeader>
           <DialogTitle className="text-gray-200">Connect Wallet</DialogTitle>
         </DialogHeader>
@@ -394,7 +394,7 @@ const WalletConnection = () => {
                 handleWalletSelect(wallet.adapter.name as WalletName)
               }
               variant="outline"
-              className="w-full justify-start bg-black/50 border-[#A374FF]/20 hover:border-[#A374FF] hover:shadow-[0_0_15px_#A374FF40] text-gray-300 transition-all"
+              className="w-full justify-start bg-black/50 border-[#0040ff]/20 hover:border-[#0040ff] hover:shadow-[0_0_15px_#0040ff40] text-gray-300 transition-all"
             >
               <Image
                 src={wallet.adapter.icon}

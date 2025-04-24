@@ -4,8 +4,8 @@ import { Logo } from "../icon";
 export default function Footer() {
   return (
     <footer className="relative pt-16 px-4 lg:px-6 border-t border-[#A374FF]/10">
-      <div className="absolute inset-0 bg-white">
-        <div className="absolute inset-0 bg-gradient-to-t from-[#CEC9C9]/50 via-white/95 to-white"></div>
+      <div className="absolute inset-0 bg-black/90">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#A374FF]/5 via-black/95 to-black/90"></div>
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
       </div>
       <div className="relative mx-auto max-w-7xl">
@@ -21,11 +21,11 @@ export default function Footer() {
                 priority
               />
 
-              <span className="text-xl font-bold bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-transparent bg-clip-text">
+              <span className="text-xl font-bold sm:inline-block bg-gradient-to-r from-[#A374FF] via-[#500ee9] to-[#0066ff] text-transparent bg-clip-text hover:from-[#ab4deb] hover:to-[#0066ff] transition-all">
                 CoreNet
               </span>
             </a>
-            <p className="text-gray-600 text-sm">
+            <p className="text-white text-sm">
               Powering the Future of Modular Compute
             </p>
             <div className="flex gap-4">
@@ -63,18 +63,17 @@ export default function Footer() {
                   ></path>
                 </svg>
               </a>
-             
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-gray-800 font-semibold mb-6">Ecosystem</h3>
+            <h3 className="text-white font-semibold mb-6">Ecosystem</h3>
             <ul className="space-y-4">
               <li>
                 <a
                   href="/model"
-                  className="text-gray-600 hover:text-[#00E5FF] transition-colors"
+                  className="text-gray-500 hover:text-[#0066ff] transition-colors"
                 >
                   Models
                 </a>
@@ -82,7 +81,7 @@ export default function Footer() {
               <li>
                 <a
                   href="/workspace"
-                  className="text-gray-600 hover:text-[#00E5FF] transition-colors"
+                  className="text-gray-500 hover:text-[#0066ff] transition-colors"
                 >
                   WorkSpace
                 </a>
@@ -90,7 +89,7 @@ export default function Footer() {
               <li>
                 <a
                   href="/explorer"
-                  className="text-gray-600 hover:text-[#00E5FF] transition-colors"
+                  className="text-gray-500 hover:text-[#0066ff] transition-colors"
                 >
                   Explore
                 </a>
@@ -98,7 +97,7 @@ export default function Footer() {
               <li>
                 <a
                   href="/staking"
-                  className="text-gray-600 hover:text-[#00E5FF] transition-colors"
+                  className="text-gray-500 hover:text-[#0066ff] transition-colors"
                 >
                   Staking
                 </a>
@@ -108,14 +107,14 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-gray-800 font-semibold mb-6">Resources</h3>
+            <h3 className="text-white font-semibold mb-6">Resources</h3>
             <ul className="space-y-4">
               <li>
                 <a
                   href="https://solaiforge.gitbook.io/solaiforge-docs"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 hover:text-[#00FFA3] transition-colors"
+                  className="text-gray-500 hover:text-[#0066ff] transition-colors"
                 >
                   Documentation
                 </a>
@@ -123,7 +122,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-gray-600 hover:text-[#00FFA3] transition-colors"
+                  className="text-gray-500 hover:text-[#0066ff] transition-colors"
                 >
                   Help Center
                 </a>
@@ -131,7 +130,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-gray-600 hover:text-[#00FFA3] transition-colors"
+                  className="text-gray-500 hover:text-[#0066ff] transition-colors"
                 >
                   Blog
                 </a>
@@ -139,7 +138,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-gray-600 hover:text-[#00FFA3] transition-colors"
+                  className="text-gray-500 hover:text-[#0066ff] transition-colors"
                 >
                   Github
                 </a>
@@ -149,8 +148,8 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-gray-800 font-semibold mb-6">Stay Updated</h3>
-            <p className="text-gray-600 text-sm mb-4">
+            <h3 className="text-white font-semibold mb-6">Stay Updated</h3>
+            <p className="text-gray-500 text-sm mb-4">
               Subscribe to our newsletter for the latest updates and exclusive
               offers.
             </p>
@@ -173,7 +172,6 @@ export default function Footer() {
             <div className="text-gray-400 text-sm">
               © 2025 CoreNet. All rights reserved.
             </div>
-       
           </div>
         </div>
       </div>

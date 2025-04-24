@@ -215,3 +215,30 @@ body {
     transform: scale(1.05);
   }
 }
+
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes border-flow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+.animate-border-flow {
+  animation: border-flow 3s linear infinite;
+}
