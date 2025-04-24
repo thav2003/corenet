@@ -1,38 +1,29 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import {
-  BookmarkIcon,
-  Share2Icon,
-  StarIcon,
-  DownloadIcon,
-  TrendingUp,
-  ZapIcon,
-  CalendarDays,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useState } from "react"
+import { motion } from "framer-motion"
+import Link from "next/link"
+import { BookmarkIcon, Share2Icon, StarIcon, DownloadIcon, TrendingUp, ZapIcon, CalendarDays } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
-// Interface cho model từ Hugging Face API
+// Interface for model from Hugging Face API
 export interface HuggingFaceModel {
-  _id: string;
-  id: string;
-  likes: number;
-  downloads: number;
-  tags: string[];
-  pipeline_tag: string;
-  library_name: string;
-  modelId: string;
-  trendingScore: number;
-  createdAt: string;
+  _id: string
+  id: string
+  likes: number
+  downloads: number
+  tags: string[]
+  pipeline_tag: string
+  library_name: string
+  modelId: string
+  trendingScore: number
+  createdAt: string
 }
 
-// Component card cho từng model
+// Component card for each model
 export function ModelCardHuggingFace({ model }: { model: HuggingFaceModel }) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered, setIsHovered] = useState(false)
 
   const formatDate = (dateString: string) => {
     try {
@@ -40,23 +31,24 @@ export function ModelCardHuggingFace({ model }: { model: HuggingFaceModel }) {
         year: "numeric",
         month: "short",
         day: "numeric",
-      };
-      return new Date(dateString).toLocaleDateString("en-US", options);
+      }
+      return new Date(dateString).toLocaleDateString("en-US", options)
     } catch (e) {
-      return "N/A";
+      return "N/A"
     }
-  };
+  }
 
   return (
     <motion.div
-      className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col h-full border border-gray-100"
+      className="bg-[#141425] rounded-lg shadow-md overflow-hidden flex flex-col h-full border border-[#00E5FF]/20"
       variants={{
         hidden: { opacity: 0, y: 20 },
         show: { opacity: 1, y: 0 },
       }}
       whileHover={{
         y: -5,
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 10px 30px rgba(0, 229, 255, 0.15)",
+        borderColor: "rgba(0, 229, 255, 0.4)",
         transition: { duration: 0.2 },
       }}
       onHoverStart={() => setIsHovered(true)}
@@ -68,7 +60,7 @@ export function ModelCardHuggingFace({ model }: { model: HuggingFaceModel }) {
           <div className="mb-2">
             <Link
               href={`https://huggingface.co/${model?.modelId}`}
-              className="text-blue-500 text-sm font-medium hover:underline"
+              className="text-[#00E5FF] text-sm font-medium hover:underline"
               target="_blank"
             >
               {model.pipeline_tag}
@@ -78,7 +70,7 @@ export function ModelCardHuggingFace({ model }: { model: HuggingFaceModel }) {
 
         {/* Library name */}
         {model.library_name && (
-          <div className="flex items-center mb-2 text-gray-600 text-sm">
+          <div className="flex items-center mb-2 text-gray-400 text-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -100,10 +92,10 @@ export function ModelCardHuggingFace({ model }: { model: HuggingFaceModel }) {
         )}
 
         {/* Model name */}
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 flex flex-wrap break-words">
+        <h3 className="text-lg font-semibold text-gray-100 mb-2 flex flex-wrap break-words">
           <Link
             href={`https://huggingface.co/${model?.modelId}`}
-            className="hover:text-blue-600 transition-colors"
+            className="hover:text-[#00E5FF] transition-colors"
             target="_blank"
           >
             {model.id}
@@ -112,7 +104,7 @@ export function ModelCardHuggingFace({ model }: { model: HuggingFaceModel }) {
 
         {/* Creation date */}
         {model.createdAt && (
-          <div className="flex items-center text-sm text-gray-600 mb-4">
+          <div className="flex items-center text-sm text-gray-400 mb-4">
             <CalendarDays className="w-4 h-4 mr-1" />
             <span>{formatDate(model.createdAt)}</span>
           </div>
@@ -123,29 +115,18 @@ export function ModelCardHuggingFace({ model }: { model: HuggingFaceModel }) {
           {model.tags && model.tags.length > 0 ? (
             model.tags.length <= 5 ? (
               model.tags.map((tag, index) => (
-                <Badge
-                  key={index}
-                  variant="outline"
-                  className="bg-blue-50 text-blue-700 border-blue-100"
-                >
+                <Badge key={index} variant="outline" className="bg-[#0D0D15] text-gray-300 border-[#6E2BFF]/20">
                   {tag}
                 </Badge>
               ))
             ) : (
               <>
                 {model.tags.slice(0, 4).map((tag, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="bg-blue-50 text-blue-700 border-blue-100"
-                  >
+                  <Badge key={index} variant="outline" className="bg-[#0D0D15] text-gray-300 border-[#6E2BFF]/20">
                     {tag}
                   </Badge>
                 ))}
-                <Badge
-                  variant="outline"
-                  className="bg-gray-100 text-gray-800 border-gray-200"
-                >
+                <Badge variant="outline" className="bg-[#0D0D15] text-gray-300 border-[#6E2BFF]/20">
                   +{model.tags.length - 4} more
                 </Badge>
               </>
@@ -154,37 +135,40 @@ export function ModelCardHuggingFace({ model }: { model: HuggingFaceModel }) {
         </div>
 
         {/* Stats */}
-        <div className="flex items-center text-gray-600 mb-4 mt-auto">
+        <div className="flex items-center text-gray-400 mb-4 mt-auto">
           <div className="flex items-center mr-4">
-            <StarIcon className="w-4 h-4 mr-1 text-yellow-400" />
+            <StarIcon className="w-4 h-4 mr-1 text-[#6E2BFF]" />
             <span>{model.likes}</span>
           </div>
           <div className="flex items-center mr-4">
-            <DownloadIcon className="w-4 h-4 mr-1" />
+            <DownloadIcon className="w-4 h-4 mr-1 text-[#00E5FF]" />
             <span>{model.downloads}</span>
           </div>
           {model.trendingScore !== undefined && (
             <div className="flex items-center">
-              <TrendingUp className="w-4 h-4 mr-1" />
+              <TrendingUp className="w-4 h-4 mr-1 text-[#6E2BFF]" />
               <span>{model.trendingScore}</span>
             </div>
           )}
           <div className="ml-auto">
-            <ZapIcon className="w-4 h-4" />
+            <ZapIcon className="w-4 h-4 text-[#00E5FF]" />
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-2 border-t border-[#00E5FF]/10">
           <div className="flex space-x-2">
-            <button className="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-              <Share2Icon className="h-4 w-4" />
+            <button className="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-[#1A1A30] hover:text-[#00E5FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+              <Share2Icon className="h-4 w-4 text-gray-300" />
             </button>
-            <button className="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-              <BookmarkIcon className="h-4 w-4" />
+            <button className="h-8 w-8 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-[#1A1A30] hover:text-[#00E5FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+              <BookmarkIcon className="h-4 w-4 text-gray-300" />
             </button>
           </div>
-          <Button asChild className="cursor-pointer">
+          <Button
+            asChild
+            className="bg-gradient-to-r from-[#6E2BFF] to-[#00E5FF] hover:from-[#7C3AFF] hover:to-[#00D1EB] text-white border-none"
+          >
             <Link href={`https://huggingface.co/${model?.modelId}`} target="_blank">
               See details
             </Link>
@@ -192,5 +176,5 @@ export function ModelCardHuggingFace({ model }: { model: HuggingFaceModel }) {
         </div>
       </div>
     </motion.div>
-  );
+  )
 }

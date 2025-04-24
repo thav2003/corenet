@@ -134,7 +134,7 @@ export default function Home() {
     }
   }, [connected]);
   return (
-    <main className="min-h-screen flex flex-col ">
+    <main className="min-h-screen flex flex-col  bg-black">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

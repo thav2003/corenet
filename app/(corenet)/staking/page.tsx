@@ -90,123 +90,123 @@ const glitchKeyframes = `
 `;
 
 export default function Staking() {
-
+  // Add style tag for glitch animations
   useEffect(() => {
     const style = document.createElement("style");
     style.textContent = glitchKeyframes;
     document.head.appendChild(style);
     return () => {
       document.head.removeChild(style);
-      return undefined; 
     };
   }, []);
 
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-center p-4 overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-gray-100" />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 scale-105" />
+      <div className="absolute inset-0 bg-black/90">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#A374FF]/10 via-black/95 to-black/90"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
 
-        {/* Optimized Scanlines */}
+        {/* Animated scanlines */}
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(12)].map((_, i) => (
+          {[...Array(20)].map((_, i) => (
             <div
               key={i}
-              className="absolute inset-x-0 bg-gradient-to-b from-transparent via-black/[0.03] to-transparent"
+              className="absolute inset-x-0 bg-gradient-to-b from-transparent via-white/[0.15] to-transparent"
               style={{
                 height: "1px",
-                top: `${i * 8}%`,
-                animation: `scanline ${8 + i * 0.2}s linear infinite`,
-                opacity: 0.2,
+                top: `${i * 5}%`,
+                animation: `scanline ${3 + i * 0.5}s linear infinite`,
+                opacity: 0.5,
               }}
             />
           ))}
         </div>
       </div>
 
-      {/* Content Container */}
-      <div className="relative z-10 max-w-3xl mx-auto text-center px-4 w-full">
-        {/* Main Title */}
-        <div className="relative inline-block mb-8 md:mb-12">
+      {/* Content */}
+      <div className="relative z-10 max-w-3xl mx-auto text-center">
+        {/* Coming Soon Text with Strong Glitch */}
+        <div className="relative inline-block">
           <h1
-            className="text-10xl md:text-8xl font-bold text-gray-800"
+            className="text-7xl md:text-9xl font-bold text-white mb-6"
             style={{
               animation: "glitch-2 3s infinite linear",
-              textShadow: "0 0 30px rgba(163, 116, 255, 0.2)",
+              textShadow: "0 0 40px rgba(163, 116, 255, 0.5)",
             }}
           >
-            <span className="block">STAKING</span>
+            STAKING
             <span
-              className="absolute inset-0 text-gray-800 opacity-0"
+              className="absolute inset-0 text-white"
               style={{
                 animation: "glitch 5s infinite linear alternate-reverse",
+                clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
               }}
-              aria-hidden
             >
               STAKING
             </span>
           </h1>
         </div>
 
-        {/* Content Section */}
+        {/* Subtitle with Tech Feel */}
         <div className="space-y-6 relative">
-          {/* Subtitle */}
           <div
-            className="text-xl md:text-2xl font-medium text-[#6366F1] tracking-wide"
-            style={{ animation: "glitch-loop 4s infinite linear" }}
+            className="text-2xl md:text-3xl font-light tracking-wider text-[#00E5FF]"
+            style={{
+              animation: "glitch-loop 4s infinite linear",
+            }}
           >
             COMING SOON
           </div>
 
-          {/* Description */}
-          <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto">
             Our advanced staking platform is under development. Get ready to
             earn rewards and participate in the future of decentralized finance.
           </p>
 
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 md:mt-12">
-            {[
-              {
-                title: "High APY",
-                desc: "Earn competitive rewards through our optimized staking protocols",
-              },
-              {
-                title: "Flexible Terms",
-                desc: "Choose from various staking periods to match your investment strategy",
-              },
-            ].map((feature, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-xl bg-white/90 border border-gray-100 backdrop-blur-sm hover:border-[#6366F1]/30 transition-all shadow-sm"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-7 h-7 rounded-lg bg-[#6366F1]/10 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-[#6366F1]" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {feature.title}
-                  </h3>
+          {/* Feature Preview */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12">
+            <div className="p-6 rounded-xl bg-black/40 border border-[#A374FF]/20 backdrop-blur-sm hover:border-[#A374FF]/40 transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[#00FFA3]/10 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-[#00FFA3]" />
                 </div>
-                <p className="text-gray-600 text-sm">{feature.desc}</p>
+                <h3 className="text-xl font-semibold text-white">High APY</h3>
               </div>
-            ))}
+              <p className="text-gray-400">
+                Earn competitive rewards through our optimized staking protocols
+              </p>
+            </div>
+
+            <div className="p-6 rounded-xl bg-black/40 border border-[#A374FF]/20 backdrop-blur-sm hover:border-[#A374FF]/40 transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[#00E5FF]/10 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-[#00E5FF]" />
+                </div>
+                <h3 className="text-xl font-semibold text-white">
+                  Flexible Terms
+                </h3>
+              </div>
+              <p className="text-gray-400">
+                Choose from various staking periods to match your investment
+                strategy
+              </p>
+            </div>
           </div>
 
           {/* CTA Button */}
-          <div className="mt-8 md:mt-12">
-            <Button className="bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#6366F1]/90 hover:to-[#8B5CF6]/90 text-white font-medium text-base px-6 py-5">
+          <div className="mt-12">
+            <Button className="bg-gradient-to-r from-[#00FFA3] to-[#00E5FF] hover:from-[#00FFA3]/90 hover:to-[#00E5FF]/90 text-black font-medium text-lg px-8 py-6">
               Get Notified
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Background Blobs */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-[#6366F1]/10 rounded-full blur-[100px] opacity-50" />
-      <div className="absolute bottom-0 right-0 w-64 h-64 bg-[#8B5CF6]/10 rounded-full blur-[100px] opacity-50" />
+      {/* Decorative Elements */}
+      <div className="absolute -top-20 -left-20 w-40 h-40 bg-[#00FFA3]/10 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-[#A374FF]/10 rounded-full blur-3xl"></div>
     </div>
   );
 }

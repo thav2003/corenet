@@ -16,7 +16,6 @@ interface Model {
   tags: string[]
 }
 
-// Update the SearchBar component styling to match the image
 export function SearchBar() {
   const [query, setQuery] = useState("")
   const [models, setModels] = useState<Model[]>([])
@@ -77,11 +76,11 @@ export function SearchBar() {
   return (
     <div className="relative w-full flex" ref={searchRef}>
       <div className="relative w-full max-w-full">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#00E5FF] z-10" />
         <Input
           type="search"
           placeholder="Ask anything you want to do with AI"
-          className="w-full bg-white pl-10 h-10 border-gray-200 shadow-sm hover:border-gray-300 focus:border-gray-300 transition-all text-gray-800 placeholder:text-gray-400"
+          className="w-full bg-[#141425] pl-10 h-10 border-[#00E5FF]/30 shadow-sm hover:border-[#00E5FF]/50 focus:border-[#00E5FF] transition-all text-gray-200 placeholder:text-gray-500"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value)
@@ -93,7 +92,7 @@ export function SearchBar() {
 
       {/* Search Results Dropdown */}
       {showResults && (models.length > 0 || loading) && (
-        <div className="absolute top-12 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg max-h-[32rem] overflow-y-auto z-10">
+        <div className="absolute top-12 left-0 right-0 bg-[#0D0D15] border border-[#00E5FF]/30 rounded-lg shadow-lg max-h-[32rem] overflow-y-auto z-10">
           {loading ? (
             <div className="p-4 text-center text-gray-400">
               <div className="animate-pulse">Searching models...</div>
@@ -103,30 +102,30 @@ export function SearchBar() {
               {models.map((model) => (
                 <button
                   key={model._id}
-                  className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
+                  className="w-full px-4 py-3 text-left hover:bg-[#141425] transition-colors border-b border-[#00E5FF]/10 last:border-0"
                   onClick={() => handleSelectModel(model.modelId)}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="font-medium text-gray-800 text-base">{model.id}</div>
-                    <ExternalLink className="h-4 w-4 text-gray-500" />
+                    <div className="font-medium text-gray-200 text-base">{model.id}</div>
+                    <ExternalLink className="h-4 w-4 text-[#00E5FF]" />
                   </div>
 
                   <div className="flex items-center gap-2 mt-1 text-sm">
-                    <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs">
+                    <span className="px-2 py-0.5 rounded-full bg-[#141425] text-[#00E5FF] text-xs border border-[#00E5FF]/20">
                       {model.pipeline_tag}
                     </span>
-                    <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs">
+                    <span className="px-2 py-0.5 rounded-full bg-[#141425] text-[#6E2BFF] text-xs border border-[#6E2BFF]/20">
                       {model.library_name}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                     <div className="flex items-center gap-1">
-                      <Star className="h-3 w-3 text-gray-500" />
+                      <Star className="h-3 w-3 text-[#6E2BFF]" />
                       <span>{model.likes.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Download className="h-3 w-3 text-gray-500" />
+                      <Download className="h-3 w-3 text-[#00E5FF]" />
                       <span>{model.downloads.toLocaleString()}</span>
                     </div>
                   </div>
@@ -135,9 +134,9 @@ export function SearchBar() {
                     {model.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs flex items-center gap-1"
+                        className="px-2 py-0.5 rounded-full bg-[#141425] text-gray-300 text-xs flex items-center gap-1 border border-[#6E2BFF]/20"
                       >
-                        <Tag className="h-3 w-3" />
+                        <Tag className="h-3 w-3 text-[#6E2BFF]" />
                         {tag}
                       </span>
                     ))}

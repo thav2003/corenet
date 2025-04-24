@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
-import { FeatureCard } from "./feature-card";
-import { CloudIcon, LockIcon, BarChart3Icon, DatabaseIcon } from "lucide-react";
+"use client"
+import { motion } from "framer-motion"
+import { FeatureCard } from "./feature-card"
+import { CloudIcon, LockIcon, BarChart3Icon, DatabaseIcon } from "lucide-react"
 
 export function FeaturesSection() {
   const containerVariants = {
@@ -27,15 +28,16 @@ export function FeaturesSection() {
   };
 
   return (
-    <section className="relative py-20">
-      <div className="absolute inset-0 bg-black">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0066ff]/20 to-black"></div>
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
-      </div>
+    <section className="pt-20 pb-10 relative overflow-hidden">
+      {/* Dark gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0D0D15] to-[#141425] z-0"></div>
 
-      <div className="relative container mx-auto px-4 md:px-6">
+      {/* Subtle grid overlay */}
+      <div className="absolute inset-0 bg-[url('/placeholder.svg?height=800&width=1600')] bg-cover bg-center opacity-5 mix-blend-overlay z-0"></div>
+
+      <div className="container relative mx-auto px-4 md:px-6 z-10">
         <motion.h2
-          className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-[#A374FF] via-[#500ee9] to-[#0066ff] text-transparent bg-clip-text hover:from-[#ab4deb] hover:to-[#0066ff]"
+          className="text-3xl font-bold text-center mb-12 text-white bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-300"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -53,37 +55,45 @@ export function FeaturesSection() {
         >
           <motion.div variants={itemVariants}>
             <FeatureCard
-              icon={<CloudIcon className="h-10 w-10 text-[#0040ff]" />}
+              icon={<CloudIcon className="h-10 w-10 text-[#00E5FF]" />}
               title="AI Compute"
               description="High-performance computing infrastructure optimized for AI workloads"
-              className="bg-black/40 border-zinc-800/40 hover:border-zinc-700/70 backdrop-blur-sm"
+              className="bg-[#141425]/80 border border-[#00E5FF]/20 hover:border-[#00E5FF]/40 hover:shadow-[0_0_15px_rgba(0,229,255,0.2)]"
+              titleClassName="text-white"
+              descriptionClassName="text-gray-400"
             />
           </motion.div>
 
           <motion.div variants={itemVariants}>
             <FeatureCard
-              icon={<LockIcon className="h-10 w-10 text-[#0040ff]" />}
+              icon={<LockIcon className="h-10 w-10 text-[#6E2BFF]" />}
               title="ZK Compute"
               description="Zero-knowledge proof computation for enhanced privacy and security"
-              className="bg-black/40 border-zinc-800/40 hover:border-zinc-700/70 backdrop-blur-sm"
+              className="bg-[#141425]/80 border border-[#6E2BFF]/20 hover:border-[#6E2BFF]/40 hover:shadow-[0_0_15px_rgba(110,43,255,0.2)]"
+              titleClassName="text-white"
+              descriptionClassName="text-gray-400"
             />
           </motion.div>
 
           <motion.div variants={itemVariants}>
             <FeatureCard
-              icon={<BarChart3Icon className="h-10 w-10 text-[#0040ff]" />}
+              icon={<BarChart3Icon className="h-10 w-10 text-[#00E5FF]" />}
               title="MEV Optimization"
               description="Maximize value extraction with advanced optimization algorithms"
-              className="bg-black/40 border-zinc-800/40 hover:border-zinc-700/70 backdrop-blur-sm"
+              className="bg-[#141425]/80 border border-[#00E5FF]/20 hover:border-[#00E5FF]/40 hover:shadow-[0_0_15px_rgba(0,229,255,0.2)]"
+              titleClassName="text-white"
+              descriptionClassName="text-gray-400"
             />
           </motion.div>
 
           <motion.div variants={itemVariants}>
             <FeatureCard
-              icon={<DatabaseIcon className="h-10 w-10 text-[#0040ff]" />}
+              icon={<DatabaseIcon className="h-10 w-10 text-[#6E2BFF]" />}
               title="Decentralized Storage"
               description="Reliable, secure, fast, and efficient distributed storage solution"
-              className="bg-black/40 border-zinc-800/40 hover:border-zinc-700/70 backdrop-blur-sm"
+              className="bg-[#141425]/80 border border-[#6E2BFF]/20 hover:border-[#6E2BFF]/40 hover:shadow-[0_0_15px_rgba(110,43,255,0.2)]"
+              titleClassName="text-white"
+              descriptionClassName="text-gray-400"
             />
           </motion.div>
         </motion.div>

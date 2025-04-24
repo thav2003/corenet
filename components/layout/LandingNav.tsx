@@ -19,7 +19,7 @@ export function LandingNav() {
           <Link href="/about" className="text-gray-700 hover:text-purple-600">
             About
           </Link>
-          <Link href="/docs" className="text-gray-700 hover:text-purple-600">
+          <Link href="https://corenet.gitbook.io/corenet-docs" target="_blank" className="text-gray-700 hover:text-purple-600">
             Docs
           </Link>
           <Link href="/contact" className="text-gray-700 hover:text-purple-600">
