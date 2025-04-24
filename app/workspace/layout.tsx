@@ -33,7 +33,7 @@ const WorkspaceLayout = ({ children }: { children: React.ReactNode }) => {
 
         {/* Main Content */}
         <div className="flex-1 overflow-auto">
-          <div className="min-h-[calc(100vh-4rem)] p-6 bg-black">
+          <div className="min-h-[calc(100vh-4rem)] p-6" style={{backgroundImage: `linear-gradient(to right, #0a1a2f 0%, #0e0e19 100%)`}}>
             {children}
           </div>
 
