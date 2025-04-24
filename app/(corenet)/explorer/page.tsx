@@ -370,7 +370,7 @@ export default function ExplorerPage() {
   }, [viewMode]);
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen" style={{backgroundImage: `linear-gradient(to right, #0a1a2f 0%, #0e0e19 100%)`}}>
       <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5 [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
       <div className="container relative mx-auto px-4 py-8">
         {/* Header */}

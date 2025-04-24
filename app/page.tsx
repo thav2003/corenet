@@ -134,7 +134,7 @@ export default function Home() {
     }
   }, [connected]);
   return (
-    <main className="min-h-screen flex flex-col  bg-black">
+    <main className="min-h-screen flex flex-col bg-black">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -142,15 +142,25 @@ export default function Home() {
       >
         <Header />
       </motion.div>
+      
+      <motion.div ref={heroRef} animate={heroControls} initial="hidden" variants={fadeInUp}>
+        <HeroSection />
+      </motion.div>
+      <motion.div ref={heroRef} animate={heroControls} initial="hidden" variants={fadeInUp} style={{backgroundImage: `linear-gradient(to right, #111323 0%, #0e0e19 100%)`}}>
+        <ModelCards />
+      </motion.div>
 
-      <HeroSection />
-      <ModelCards />
+      <motion.div ref={featuresRef} animate={featuresControls} initial="hidden" variants={staggerContainer}>
+        <FeaturesSection />
+      </motion.div>
 
-      <FeaturesSection />
+      <motion.div ref={workRef} animate={workControls} initial="hidden" variants={staggerContainer}>
+        <HowItWorksSection />
+      </motion.div>
 
-      <HowItWorksSection />
-
-      <Footer />
+      <motion.div ref={footerRef} animate={footerControls} initial="hidden" variants={fadeInUp}>
+        <Footer />
+      </motion.div>
     </main>
-  );
+  )
 }

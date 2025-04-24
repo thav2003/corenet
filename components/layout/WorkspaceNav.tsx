@@ -38,6 +38,11 @@ export function WorkspaceNav() {
       icon: <Settings className="h-5 w-5" />,
       href: "/workspace/settings",
     },
+    {
+      title: "Home",
+      icon: <House className="h-5 w-5" />,
+      href: "/",
+    },
   ];
 
   return (
