@@ -52,9 +52,6 @@ const Header = () => {
           >
             Staking
           </Link>
-        </nav>
-
-        <div className="flex items-center gap-2 ml-4">
           <Link
             href="https://corenet.gitbook.io/corenet-docs"
             target="_blank"
@@ -62,6 +59,10 @@ const Header = () => {
           >
             Docs
           </Link>
+        </nav>
+
+        <div className="flex items-center gap-2 ml-4">
+        
           <div className="h-9">
             <WalletConnection />
           </div>

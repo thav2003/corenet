@@ -9,7 +9,7 @@ import Link from "next/link"
 import { BookmarkIcon, Share2Icon, StarIcon, DownloadIcon, TrendingUp, ZapIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { SearchBar } from "../SearchBar"
-
+import { ModelCardsSkeleton } from "./modalSkeletonLoading"
 // Sample data for the model cards
 interface HuggingFaceModel {
   _id: string
@@ -78,7 +78,9 @@ export function ModelCards({ className }: { className?: string }) {
   if (loading) {
     return (
       <div className="text-center py-8">
-        <div className="animate-pulse text-gray-300">Loading models...</div>
+        <div className="animate-pulse text-gray-300">
+          <ModelCardsSkeleton />
+        </div>
       </div>
     )
   }
