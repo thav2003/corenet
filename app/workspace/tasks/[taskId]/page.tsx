@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import { useParams } from "next/navigation";
+import React, { useEffect, useState, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,21 +11,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import {
   Clock,
   CheckCircle2,
   Cpu,
-  Coins,
-  Terminal,
   Brain,
-  Database,
+  Terminal,
   Play,
   XCircle,
   Download,
   Loader2,
+  ArrowLeft,
 } from "lucide-react";
-import { mockTasks } from "../../mockTasks";
+import { Textarea } from "@/components/ui/textarea";
 import { CreateTaskButton } from "../../../../components/CreateTaskButton";
 import {
   LineChart,
@@ -37,15 +35,45 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import {
+  PublicKey,
+  Transaction,
+  SystemProgram,
+  LAMPORTS_PER_SOL,
+} from "@solana/web3.js";
+
+interface Task {
+  id: string;
+  name: string;
+  type: string;
+  numGpus: number;
+  vcpuPerGpu: number;
+  ramPerGpu: number;
+  diskSize: number;
+  model?: string;
+  scriptPath?: string;
+  installCommand?: string;
+  runCommand?: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ResourceUsage {
+  time: string;
+  gpu: number;
+  memory: number;
+  cpu: number;
+}
 
 export default function TaskDetailsPage() {
   const { taskId } = useParams();
-  const [task, setTask] = useState(
-    mockTasks.find((t) => t.id === Number(taskId))
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const wallet = useWallet();
+  const { connection } = useConnection();
+  const [task, setTask] = useState<Task | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [logs, setLogs] = useState<string[]>([]);
   const [promptInput, setPromptInput] = useState("");
   const [imageConfig, setImageConfig] = useState({
@@ -60,17 +88,12 @@ export default function TaskDetailsPage() {
   >([]);
 
   // Resource usage data
-  const [resourceData, setResourceData] = useState([
-    { time: "00:00", gpu: 0, memory: 0, cpu: 0, network: 0, disk: 0 },
-    { time: "00:01", gpu: 20, memory: 15, cpu: 25, network: 10, disk: 5 },
-    { time: "00:02", gpu: 40, memory: 30, cpu: 45, network: 25, disk: 15 },
-    { time: "00:03", gpu: 65, memory: 45, cpu: 60, network: 40, disk: 30 },
-    { time: "00:04", gpu: 85, memory: 60, cpu: 80, network: 55, disk: 45 },
-    { time: "00:05", gpu: 75, memory: 55, cpu: 70, network: 45, disk: 35 },
+  const [resourceData, setResourceData] = useState<ResourceUsage[]>([
+    { time: new Date().toLocaleTimeString(), gpu: 0, memory: 0, cpu: 0 },
   ]);
 
   // Add a ref for the logs container
-  const logsContainerRef = useRef<HTMLDivElement>(null);
+  const logsContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Add a useEffect to handle scrolling whenever logs change
   useEffect(() => {
@@ -80,14 +103,71 @@ export default function TaskDetailsPage() {
     }
   }, [logs]);
 
-  useEffect(() => {
-    // Load initial logs
-    if (task?.details?.logs) {
-      setLogs(task.details.logs);
+  const fetchTaskDetails = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/tasks/${taskId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch task details");
+      }
+      const data = await response.json();
+      setTask(data);
+    } catch (error) {
+      console.error("Error fetching task details:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [task?.details?.logs]);
+  }, [taskId]);
 
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (taskId) {
+      fetchTaskDetails();
+    }
+  }, [taskId, fetchTaskDetails]);
+
+  // Effect for SSE connection
+  useEffect(() => {
+    let eventSource: EventSource | null = null;
+
+    // Set up SSE connection to listen for updates
+    eventSource = new EventSource(`/api/runtask/${taskId}`);
+
+    eventSource.onmessage = (event) => {
+      console.log("Event:", event);
+      const data = JSON.parse(event.data);
+
+      if (data.type === "resource") {
+        setResourceData((prev) => {
+          const newData = [...prev, data.data];
+          return newData.slice(-10);
+        });
+      }
+
+      if (data.type === "log") {
+        setLogs((prev) => [...prev, data.data]);
+      }
+
+      if (data.type === "done") {
+        eventSource?.close();
+        fetchTaskDetails();
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE Error:", error);
+      eventSource?.close();
+
+      setLogs((prev) => [...prev, "Error: Connection to server lost"]);
+    };
+
+    // Cleanup function
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+    };
+  }, [taskId]);
+
+  const chatContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Add useEffect for chat auto-scroll
   useEffect(() => {
@@ -96,6 +176,24 @@ export default function TaskDetailsPage() {
         chatContainerRef.current.scrollHeight;
     }
   }, [chatMessages]);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-6">
+        <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+          <CardHeader>
+            <CardTitle className="text-[#334155]">Loading...</CardTitle>
+            <CardDescription className="text-[#64748B]">
+              Fetching task details...
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-[#A374FF]" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (!task) {
     return (
@@ -107,25 +205,27 @@ export default function TaskDetailsPage() {
               The requested task could not be found.
             </CardDescription>
           </CardHeader>
+          <CardFooter>
+            <Button
+              onClick={() => router.back()}
+              variant="outline"
+              className="text-[#64748B]"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Tasks
+            </Button>
+          </CardFooter>
         </Card>
       </div>
     );
   }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "created":
-        return <Clock className="h-4 w-4 text-[#A374FF]" />;
-      case "running":
-        return <Loader2 className="h-4 w-4 text-[#00E5FF] animate-spin" />;
-      case "completed":
-        return <CheckCircle2 className="h-4 w-4 text-[#00FFA3]" />;
-      case "failed":
-        return <XCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return null;
-    }
-  };
+  const statusIcon = {
+    pending: <Clock className="h-4 w-4 text-yellow-500" />,
+    running: <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />,
+    completed: <CheckCircle2 className="h-4 w-4 text-green-500" />,
+    failed: <XCircle className="h-4 w-4 text-red-500" />,
+  }[task.status.toLowerCase()];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -143,144 +243,91 @@ export default function TaskDetailsPage() {
   };
 
   const handleRunTask = async () => {
-    try {
-      setIsLoading(true);
+    if (!task || !wallet.publicKey || !wallet.signTransaction) {
+      setLogs((prev) => [...prev, "Error: Please connect your wallet first"]);
+      return;
+    }
 
-      setChatMessages((prev) => [...prev, { role: "ai", content: "Hello" }]);
-    } catch (error: unknown) {
-      console.error("Failed to start task:", error);
+    try {
+      setLogs((prev) => [...prev, "Initiating SOL transfer..."]);
+
+      // Create transfer transaction
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: wallet.publicKey,
+          toPubkey: new PublicKey(process.env.NEXT_PUBLIC_RECEIVE_WALLET || ""), // Task wallet address
+          lamports: LAMPORTS_PER_SOL * 0.05, // 0.1 SOL for example, adjust as needed
+        })
+      );
+
+      // Get latest blockhash
+      const { blockhash, lastValidBlockHeight } =
+        await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = wallet.publicKey;
+
+      // Sign and send transaction
+      const signed = await wallet.signTransaction(transaction);
+      const signature = await connection.sendRawTransaction(signed.serialize());
+
+      // Wait for confirmation
+      const confirmation = await connection.confirmTransaction({
+        signature,
+        blockhash,
+        lastValidBlockHeight: lastValidBlockHeight,
+      });
+
+      if (confirmation.value.err) {
+        throw new Error("Transaction failed");
+      }
+
+      setLogs((prev) => [...prev, `SOL transfer successful: ${signature}`]);
+
+      // Proceed with running the task
+      const response = await fetch(`/api/runtask/${task.id}`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to start task");
+      }
+      const data = await response.json();
+      setTask(data.task);
+    } catch (error) {
+      console.error("Failed to run task:", error);
       setLogs((prev) => [
         ...prev,
-        `Failed to start task: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`,
+        `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
       ]);
-      // Keep the task in 'created' state so Run Task button remains visible
-      setChatMessages((prev) => [...prev, { role: "ai", content: "Error" }]);
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  // // Move SSE connection to useEffect
-  // useEffect(() => {
-  //   let eventSource: EventSource | null = null;
-
-  //   if (task?.status === "running") {
-  //     // Establish SSE connection to monitor progress
-  //     eventSource = new EventSource(`http://localhost:8000/training/start`);
-
-  //     // Handle pod creation events
-  //     if (eventSource) {
-  //       eventSource.addEventListener("create_pod", (e) => {
-  //         console.log("Creating pod:", e.data);
-  //         setLogs((prev) => [...prev, `Creating pod: ${e.data}`]);
-  //       });
-
-  //       eventSource.addEventListener("pod_created", (e) => {
-  //         console.log("Pod created:", e.data);
-  //         setLogs((prev) => [...prev, `Pod created: ${e.data}`]);
-  //       });
-
-  //       // Handle pod status updates
-  //       eventSource.addEventListener("pod_status", (e) => {
-  //         const data = JSON.parse(e.data);
-  //         console.log("Pod status:", data);
-
-  //         if (data.status) {
-  //           setTask((prev) => ({
-  //             ...prev!,
-  //             status:
-  //               data.status === "Running"
-  //                 ? "running"
-  //                 : data.status.toLowerCase(),
-  //             progress: data.progress || prev!.progress,
-  //             timeLeft: data.timeLeft || prev!.timeLeft,
-  //           }));
-  //         }
-
-  //         // Update resource usage if available
-  //         if (data.resources) {
-  //           setResourceData((prev) => [
-  //             ...prev.slice(-9),
-  //             {
-  //               time: new Date().toLocaleTimeString("en-US", {
-  //                 hour12: false,
-  //                 hour: "2-digit",
-  //                 minute: "2-digit",
-  //                 second: "2-digit",
-  //               }),
-  //               ...data.resources,
-  //             },
-  //           ]);
-  //         }
-
-  //         // Update training metrics if available
-  //         if (data.metrics) {
-  //           setTrainingMetrics((prev) => [...prev, data.metrics]);
-  //         }
-  //       });
-
-  //       // Handle logs
-  //       eventSource.addEventListener("log", (e) => {
-  //         console.log("Pod log:", e.data);
-  //         setLogs((prev) => [...prev, e.data]);
-  //       });
-
-  //       // Handle various error events
-  //       ["create_pod", "get_pod_id", "pod_status", "unexpected"].forEach(
-  //         (errorType) => {
-  //           eventSource?.addEventListener(errorType, (e) => {
-  //             const data =
-  //               typeof e.data === "string" ? e.data : JSON.stringify(e.data);
-  //             if (data.includes("error")) {
-  //               console.error(`${errorType} error:`, data);
-  //               setLogs((prev) => [...prev, `Error (${errorType}): ${data}`]);
-
-  //               // If it's a fatal error, reset to created state
-  //               if (errorType === "unexpected" || data.includes("fatal")) {
-  //                 eventSource?.close();
-  //                 setTask((prev) => ({ ...prev!, status: "created" }));
-  //               }
-  //             }
-  //           });
-  //         }
-  //       );
-
-  //       // Handle connection close
-  //       eventSource.addEventListener("close", () => {
-  //         console.log("SSE connection closed");
-  //         eventSource?.close();
-  //       });
-
-  //       // Handle general errors
-  //       eventSource.onerror = (error: Event) => {
-  //         console.error("SSE Error:", error);
-  //         eventSource?.close();
-  //         setLogs((prev) => [
-  //           ...prev,
-  //           `Connection error: SSE connection failed`,
-  //         ]);
-  //         // Reset to created state on connection error
-  //         setTask((prev) => ({ ...prev!, status: "created" }));
-  //       };
-  //     }
-  //   }
-
-  //   // Cleanup function to close SSE connection
-  //   return () => {
-  //     if (eventSource) {
-  //       console.log("Cleaning up SSE connection");
-  //       eventSource.close();
-  //     }
-  //   };
-  // }, [task?.status, taskId]); // Add dependencies
-
   const handleCancelTask = async () => {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsLoading(false);
+    if (!task) return;
+
+    try {
+      setLogs((prev) => [...prev, "[System] Cancelling task..."]);
+
+      const response = await fetch(`/api/runtask/${task.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to cancel task");
+      }
+
+      const data = await response.json();
+      setTask(data.task);
+      setLogs((prev) => [...prev, "[System] Task cancelled successfully"]);
+    } catch (error) {
+      console.error("Failed to cancel task:", error);
+      setLogs((prev) => [
+        ...prev,
+        `Error: ${
+          error instanceof Error ? error.message : "Failed to cancel task"
+        }`,
+      ]);
+    }
   };
 
   const handleDownloadResult = async () => {
@@ -293,7 +340,7 @@ export default function TaskDetailsPage() {
   const renderPredictionInterface = () => {
     if (task.type !== "AI Predict") return null;
 
-    const modelType = task.model.toLowerCase();
+    const modelType = task.model?.toLowerCase() || "";
     const isImageModel =
       modelType.includes("stable") || modelType.includes("dall-e");
     const isChatModel =
@@ -494,7 +541,10 @@ export default function TaskDetailsPage() {
           );
         }
         return (
-          <Button className="w-full bg-[#A374FF] text-white transition-colors hover:bg-[#B68FFF]">
+          <Button
+            onClick={handleRunTask}
+            className="w-full bg-[#A374FF] text-white transition-colors hover:bg-[#B68FFF]"
+          >
             <Play className="h-4 w-4 mr-2" />
             Run Task
           </Button>
@@ -511,7 +561,7 @@ export default function TaskDetailsPage() {
           </Button>
         );
       case "completed":
-        return task.details.result ? (
+        return (
           <Button
             onClick={handleDownloadResult}
             className="w-full bg-gradient-to-r from-[#00FFA3] via-[#00E5FF] to-[#A374FF] text-white hover:opacity-90"
@@ -519,7 +569,7 @@ export default function TaskDetailsPage() {
             <Download className="h-4 w-4 mr-2" />
             Download Result
           </Button>
-        ) : null;
+        );
       default:
         return null;
     }
@@ -529,7 +579,16 @@ export default function TaskDetailsPage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-blue-500">{task.name}</h1>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => router.back()}
+              variant="ghost"
+              className="p-0 hover:bg-transparent"
+            >
+              <ArrowLeft className="h-5 w-5 text-[#64748B]" />
+            </Button>
+            <h1 className="text-2xl font-bold text-blue-500">{task.name}</h1>
+          </div>
           <div className="flex items-center gap-4 mt-1">
             <div
               className={`px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
@@ -549,7 +608,7 @@ export default function TaskDetailsPage() {
               task.status
             )}`}
           >
-            {getStatusIcon(task.status)}
+            {statusIcon}
             <span className="capitalize">{task.status}</span>
           </div>
           <CreateTaskButton />
@@ -557,72 +616,94 @@ export default function TaskDetailsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+        <Card className="bg-[#0A1A2F] border-[#1a2b44] shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
           <CardHeader>
-            <CardTitle className="text-lg text-[#334155]">
-              {task.type === "AI Training"
-                ? "Training Progress"
-                : "Prediction Interface"}
+            <CardTitle className="text-lg text-gray-200">
+              Task Details
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {task.type === "AI Training" ? (
-              <>
-                <div className="flex justify-between text-sm text-[#64748B]">
-                  <span>Completion</span>
-                  <span>{task.progress}%</span>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-400">Name:</span>
+                <span className="font-medium text-gray-200">{task.name}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-400">Type:</span>
+                <span className="font-medium text-gray-200">{task.type}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-400">Status:</span>
+                <span className="font-medium text-gray-200">{task.status}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-400">Created:</span>
+                <span className="font-medium text-gray-200">
+                  {task.createdAt}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-sm text-gray-400">Resources</p>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-[#0d2341] p-3 rounded-lg">
+                  <p className="text-sm text-gray-400">GPUs</p>
+                  <p className="text-gray-200 font-medium">{task.numGpus}</p>
                 </div>
-                <Progress
-                  value={task.progress}
-                  className="h-2 bg-[#F1F5F9] [&>div]:bg-gradient-to-r [&>div]:from-[#00FFA3] [&>div]:via-[#00E5FF] [&>div]:to-[#A374FF]"
-                />
-                <div className="text-sm text-[#64748B]">
-                  Time remaining: {task.timeLeft}
+                <div className="bg-[#0d2341] p-3 rounded-lg">
+                  <p className="text-sm text-gray-400">vCPU/GPU</p>
+                  <p className="text-gray-200 font-medium">{task.vcpuPerGpu}</p>
                 </div>
-                {task.details.startTime && (
-                  <div className="text-sm text-[#64748B]">
-                    Started: {new Date(task.details.startTime).toLocaleString()}
+                <div className="bg-[#0d2341] p-3 rounded-lg">
+                  <p className="text-sm text-gray-400">RAM/GPU</p>
+                  <p className="text-gray-200 font-medium">
+                    {task.ramPerGpu}GB
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {task.type === "AI Training" && (
+              <div className="space-y-2">
+                <p className="text-sm text-gray-400">Training Configuration</p>
+                <div className="bg-[#0d2341] p-4 rounded-lg space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-400">Script Path</p>
+                    <p className="text-gray-200 font-mono text-sm">
+                      {task.scriptPath}
+                    </p>
                   </div>
-                )}
-                {task.details.endTime && (
-                  <div className="text-sm text-[#64748B]">
-                    Completed: {new Date(task.details.endTime).toLocaleString()}
+                  <div>
+                    <p className="text-sm text-gray-400">Install Command</p>
+                    <p className="text-gray-200 font-mono text-sm">
+                      {task.installCommand}
+                    </p>
                   </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <Brain className="h-4 w-4 text-[#00E5FF]" />
-                  <span className="text-sm text-[#64748B]">Model:</span>
-                  <span className="text-sm text-[#334155]">{task.model}</span>
+                  <div>
+                    <p className="text-sm text-gray-400">Run Command</p>
+                    <p className="text-gray-200 font-mono text-sm">
+                      {task.runCommand}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Database className="h-4 w-4 text-[#00FFA3]" />
-                  <span className="text-sm text-[#64748B]">Dataset:</span>
-                  <span className="text-sm text-[#334155]">
-                    {task.details.dataset} (
-                    {task.details.datasetSize?.toLocaleString()} samples)
-                  </span>
+              </div>
+            )}
+
+            {task.type === "AI Predict" && task.model && (
+              <div className="space-y-2">
+                <p className="text-sm text-gray-400">Model</p>
+                <div className="bg-[#0d2341] p-3 rounded-lg">
+                  <p className="text-gray-200 font-medium">{task.model}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-[#A374FF]" />
-                  <span className="text-sm text-[#64748B]">
-                    Training Config:
-                  </span>
-                  <span className="text-sm text-[#334155]">
-                    {task.details.epochs} epochs, batch {task.details.batchSize}
-                    , lr {task.details.learningRate}
-                  </span>
-                </div>
-              </>
-            ) : (
-              renderPredictionInterface()
+              </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Resource Usage Card */}
-        <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+        <Card className="bg-[#0A1A2F] border-[#1a2b44] shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
           <CardHeader>
-            <CardTitle className="text-lg text-[#334155]">
+            <CardTitle className="text-lg text-gray-200">
               Resource Usage
             </CardTitle>
           </CardHeader>
@@ -670,27 +751,11 @@ export default function TaskDetailsPage() {
                     strokeWidth={2}
                     dot={false}
                   />
-                  <Line
-                    type="monotone"
-                    dataKey="network"
-                    name="Network I/O"
-                    stroke="#FF6B6B"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="disk"
-                    name="Disk I/O"
-                    stroke="#FFD93D"
-                    strokeWidth={2}
-                    dot={false}
-                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
 
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="flex items-center gap-2">
                 <Cpu className="h-4 w-4 text-[#A374FF]" />
                 <span className="text-sm text-[#64748B]">GPU:</span>
@@ -712,60 +777,42 @@ export default function TaskDetailsPage() {
                   {resourceData[resourceData.length - 1].cpu.toFixed(1)}%
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <Cpu className="h-4 w-4 text-[#FF6B6B]" />
-                <span className="text-sm text-[#64748B]">Network:</span>
-                <span className="text-sm text-[#334155]">
-                  {resourceData[resourceData.length - 1].network.toFixed(1)}%
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Cpu className="h-4 w-4 text-[#FFD93D]" />
-                <span className="text-sm text-[#64748B]">Disk:</span>
-                <span className="text-sm text-[#334155]">
-                  {resourceData[resourceData.length - 1].disk.toFixed(1)}%
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Coins className="h-4 w-4 text-[#00E5FF]" />
-              <span className="text-sm text-[#64748B]">Cost:</span>
-              <span className="text-sm text-[#334155]">
-                {task.details.cost} SOL
-              </span>
             </div>
           </CardContent>
         </Card>
 
-        {/* Update logs container with class name for auto scroll */}
-        {logs.length > 0 && (
-          <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)] md:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2 text-[#334155]">
+        <Card className="bg-[#0A1A2F] border-[#1a2b44] shadow-[0_2px_8px_rgba(0,0,0,0.2)] md:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-lg flex items-center gap-2 text-gray-200">
                 <Terminal className="h-4 w-4" />
-                Logs
+                Task Logs
               </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div
-                ref={logsContainerRef}
-                className="logs-container bg-[#F8FAFC] p-4 rounded-lg font-mono text-sm text-[#334155] h-[calc(100vh-32rem)] overflow-y-auto"
-              >
-                {logs.map((log, index) => (
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div
+              ref={logsContainerRef}
+              className="bg-[#0d2341] p-4 rounded-lg font-mono text-sm text-gray-200 h-[300px] overflow-y-auto"
+            >
+              {logs.length > 0 ? (
+                logs.map((log, index) => (
                   <div key={index} className="whitespace-pre-wrap mb-1">
                     {log}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                ))
+              ) : (
+                <div className="text-gray-400 italic">
+                  No logs available. Run the task to see output here.
+                </div>
+              )}
+            </div>
+            <div className="mt-4">
+              <ActionButton />
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      <CardFooter className="flex justify-end gap-2">
-        <ActionButton />
-      </CardFooter>
     </div>
   );
 }

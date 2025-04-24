@@ -40,7 +40,7 @@ export const mockTasks: Task[] = [
     timeLeft: "Waiting",
     created: "2024-06-15",
     details: {
-      computeUnits: 2000,
+      computeUnits: 2,
       memory: 16,
       gpu: true,
       cost: 150,
@@ -66,7 +66,7 @@ export const mockTasks: Task[] = [
     timeLeft: "1h 15m",
     created: "2024-06-15",
     details: {
-      computeUnits: 1000,
+      computeUnits: 1,
       memory: 8,
       gpu: true,
       cost: 75,
@@ -85,7 +85,7 @@ export const mockTasks: Task[] = [
     timeLeft: "1h 15m",
     created: "2024-06-15",
     details: {
-      computeUnits: 3000,
+      computeUnits: 1,
       memory: 32,
       gpu: true,
       cost: 250,
@@ -115,7 +115,7 @@ export const mockTasks: Task[] = [
     timeLeft: "Completed",
     created: "2024-06-15",
     details: {
-      computeUnits: 1500,
+      computeUnits: 1,
       memory: 16,
       gpu: true,
       cost: 100,
@@ -142,7 +142,7 @@ export const mockTasks: Task[] = [
     timeLeft: "Completed",
     created: "2024-06-15",
     details: {
-      computeUnits: 2500,
+      computeUnits: 1,
       memory: 24,
       gpu: true,
       cost: 200,
@@ -171,7 +171,7 @@ export const mockTasks: Task[] = [
     timeLeft: "Failed",
     created: "2024-06-15",
     details: {
-      computeUnits: 2000,
+      computeUnits: 1,
       memory: 16,
       gpu: true,
       cost: 120,

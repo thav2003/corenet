@@ -1,8 +1,8 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
-import { Logo } from "@/components/icon"
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/icon";
 
 export default function NotFound() {
   return (
@@ -17,9 +17,15 @@ export default function NotFound() {
       <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-8">
-          <Image src={Logo || "/placeholder.svg"} alt="SolAIForge" width={48} height={48} priority />
+          <Image
+            src={Logo || "/placeholder.svg"}
+            alt="CoreNet"
+            width={48}
+            height={48}
+            priority
+          />
           <span className="text-2xl font-bold bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#A374FF] text-transparent bg-clip-text">
-            SolAIForge
+            CoreNet
           </span>
         </div>
 
@@ -28,11 +34,13 @@ export default function NotFound() {
           404
         </h1>
 
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">Page Not Found</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-4">
+          Page Not Found
+        </h2>
 
         <p className="text-gray-600 mb-8 max-w-md">
-          The page you are looking for doesn&apos;t exist or has been moved. Explore our platform to discover amazing
-          NFT collections and AI-powered tools.
+          The page you are looking for doesn&apos;t exist or has been moved.
+          Explore our platform to discover amazing AI-powered tools.
         </p>
 
         {/* Action Buttons */}
@@ -61,5 +69,5 @@ export default function NotFound() {
         <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-[#8B5CF6]/10 rounded-full blur-3xl"></div>
       </div>
     </div>
-  )
+  );
 }

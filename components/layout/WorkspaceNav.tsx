@@ -8,7 +8,7 @@ import {
   Cpu,
   Upload,
   ClipboardList,
-  House 
+  House,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,11 +22,7 @@ export function WorkspaceNav() {
       icon: <LayoutDashboard className="h-5 w-5" />,
       href: "/workspace",
     },
-    {
-      title: "Compute",
-      icon: <Cpu className="h-5 w-5" />,
-      href: "/workspace/compute",
-    },
+
     {
       title: "Upload Model",
       icon: <Upload className="h-5 w-5" />,
@@ -41,11 +37,6 @@ export function WorkspaceNav() {
       title: "Settings",
       icon: <Settings className="h-5 w-5" />,
       href: "/workspace/settings",
-    },
-    {
-      title: "Home",
-      icon: <House className="h-5 w-5" />,
-      href: "/",
     },
   ];
 
