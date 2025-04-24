@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
 
 model Wallet {
@@ -18,4 +18,42 @@ model Wallet {
   address   String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tasks     Task[] // Relation to tasks
+  models    Model[] // Relation to models
+}
+
+model Task {
+  id             String   @id @default(cuid())
+  name           String
+  type           String // "AI Training" or "AI Predict"
+  numGpus        Int
+  vcpuPerGpu     Int
+  ramPerGpu      Int
+  diskSize       Int
+  model          Model?   @relation(fields: [modelId], references: [id]) // For AI Predict tasks
+  modelId        String? // Optional reference to a model
+  scriptPath     String? // For AI Training tasks
+  installCommand String?  @default("pip install -r requirements.txt")
+  runCommand     String?  @default("python train.py")
+  status         String   @default("created") // created, running, completed, failed
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  walletId       String // Foreign key for Wallet
+  wallet         Wallet   @relation(fields: [walletId], references: [id]) // Relation to wallet
+}
+
+model Model {
+  id          String   @id @default(cuid())
+  name        String
+  type        String // Type of model (e.g., "Vision", "NLP", etc.)
+  filePath    String // Path where model file is stored
+  fileSize    Int // Size of model file in bytes
+  status      String   @default("pending") // pending, active, error
+  framework   String? // e.g., "PyTorch", "TensorFlow", etc.
+  description String? // Optional description of the model
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  walletId    String // Foreign key for Wallet
+  wallet      Wallet   @relation(fields: [walletId], references: [id])
+  tasks       Task[] // Tasks that use this model
 }

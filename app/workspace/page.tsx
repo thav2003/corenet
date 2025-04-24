@@ -15,6 +15,7 @@ import {
   Loader2,
   XCircle,
   Circle,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -97,7 +98,7 @@ export default function WorkspacePage() {
   function TaskCard({ task }: { task: Task }) {
     const statusColors = {
       running: "text-blue-500",
-      created: "text-gray-500",
+      created: "text-gray-400",
       completed: "text-green-500",
       queued: "text-yellow-500",
       failed: "text-red-500",
@@ -105,13 +106,13 @@ export default function WorkspacePage() {
 
     return (
       <Card
-        className="p-4 bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all"
+        className="p-4 bg-[#0A1A2F] border-[#1a2b44] shadow-[0_2px_8px_rgba(0,0,0,0.2)] cursor-pointer hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-all"
         onClick={() => router.push(`/workspace/tasks/${task.id}`)}
       >
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h3 className="font-medium text-[#334155]">{task.name}</h3>
-            <p className="text-sm text-[#64748B]">{task.model}</p>
+            <h3 className="font-medium text-gray-200">{task.name}</h3>
+            <p className="text-sm text-gray-400">{task.model}</p>
           </div>
           <StatusIcon
             status={task.status}
@@ -124,37 +125,51 @@ export default function WorkspacePage() {
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-[#64748B]">Progress</span>
-            <span className="text-[#334155]">{task.progress}%</span>
+            <span className="text-gray-400">Progress</span>
+            <span className="text-gray-200">{task.progress}%</span>
           </div>
           <Progress
             value={task.progress}
-            className="h-1 bg-[#F1F5F9] [&>div]:bg-gradient-to-r [&>div]:from-[#00FFA3] [&>div]:via-[#00E5FF] [&>div]:to-[#A374FF]"
+            className="h-1 bg-[#1a2b44] [&>div]:bg-gradient-to-r [&>div]:from-[#00FFA3] [&>div]:via-[#00E5FF] [&>div]:to-[#A374FF]"
           />
           <div className="flex justify-between text-sm">
-            <span className="text-[#64748B]">Compute Units</span>
-            <span className="text-[#334155]">
+            <span className="text-gray-400">Compute Units</span>
+            <span className="text-gray-200">
               {task.details.computeUnits} CU
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-[#64748B]">Cost</span>
-            <span className="text-[#334155]">${task.details.cost}</span>
+            <span className="text-gray-400">Cost</span>
+            <span className="text-gray-200">${task.details.cost}</span>
           </div>
           {task.type === "AI Training" && (
             <div className="flex justify-between text-sm">
-              <span className="text-[#64748B]">Epochs</span>
-              <span className="text-[#334155]">{task.details.epochs}</span>
+              <span className="text-gray-400">Epochs</span>
+              <span className="text-gray-200">{task.details.epochs}</span>
             </div>
           )}
           {task.type === "AI Predict" && (
             <div className="flex justify-between text-sm">
-              <span className="text-[#64748B]">Dataset Size</span>
-              <span className="text-[#334155]">
+              <span className="text-gray-400">Dataset Size</span>
+              <span className="text-gray-200">
                 {task.details.datasetSize?.toLocaleString()} samples
               </span>
             </div>
           )}
+        </div>
+        <div className="mt-4">
+          <Button
+            size="sm"
+            variant="outline"
+            className="bg-[#0d2341] border-[#1a2b44] text-gray-400 hover:bg-[#1a2b44] hover:text-gray-200 hover:border-[#A374FF] flex items-center gap-1 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/workspace/tasks/${task.id}`);
+            }}
+          >
+            <Eye className="h-4 w-4" />
+            Detail
+          </Button>
         </div>
       </Card>
     );
@@ -171,20 +186,20 @@ export default function WorkspacePage() {
     icon: React.ReactNode;
     description: string;
   }) => (
-    <Card className="bg-white border-[#E8EFFF] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+    <Card className="bg-[#0A1A2F] border-[#1a2b44] shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-sm font-medium text-[#334155]">
+          <CardTitle className="text-sm font-medium text-gray-200">
             {title}
           </CardTitle>
-          <div className="p-2 rounded-full bg-gradient-to-r from-[#00FFA3]/10 via-[#00E5FF]/10 to-[#A374FF]/10">
+          <div className="p-2 rounded-full bg-gradient-to-r from-[#00FFA3]/20 via-[#00E5FF]/20 to-[#A374FF]/20">
             {icon}
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold text-blue-500">{value}</div>
-        <p className="text-xs text-[#64748B] mt-1">{description}</p>
+        <div className="text-2xl font-bold text-blue-400">{value}</div>
+        <p className="text-xs text-gray-400 mt-1">{description}</p>
       </CardContent>
     </Card>
   );
@@ -201,13 +216,6 @@ export default function WorkspacePage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="border-[#A374FF]/20 hover:border-[#A374FF] hover:bg-[#A374FF]/10"
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
-          </Button>
           <CreateTaskButton />
         </div>
       </div>
@@ -220,10 +228,10 @@ export default function WorkspacePage() {
           description="Total tasks created"
         />
         <StatsCard
-          title="Total Compute"
-          value={`${totalComputeUnits} CU`}
+          title="Total GPU"
+          value={`${totalComputeUnits} GPU`}
           icon={<Shield className="h-4 w-4 text-[#00FFA3]" />}
-          description="Total compute units allocated"
+          description="Total GPU allocated"
         />
         <StatsCard
           title="Total Cost"
@@ -244,22 +252,22 @@ export default function WorkspacePage() {
         className="w-full"
         onValueChange={setActiveTab}
       >
-        <TabsList className="bg-[#F8FAFC] border border-[#E8EFFF] p-1">
+        <TabsList className="bg-[#0d2341] border border-[#1a2b44] p-1">
           <TabsTrigger
             value="overview"
-            className="text-[#64748B] hover:text-[#334155] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/10 data-[state=active]:via-[#00E5FF]/10 data-[state=active]:to-[#A374FF]/10 data-[state=active]:text-[#334155] hover:bg-[#A374FF]/10 transition-colors"
+            className="text-gray-400 hover:text-gray-200 data-[state=active]:bg-[#1a2b44] data-[state=active]:text-gray-200 hover:bg-[#1a2b44]/50 transition-colors"
           >
             Overview
           </TabsTrigger>
           <TabsTrigger
             value="training"
-            className="text-[#64748B] hover:text-[#334155] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/10 data-[state=active]:via-[#00E5FF]/10 data-[state=active]:to-[#A374FF]/10 data-[state=active]:text-[#334155] hover:bg-[#A374FF]/10 transition-colors"
+            className="text-gray-400 hover:text-gray-200 data-[state=active]:bg-[#1a2b44] data-[state=active]:text-gray-200 hover:bg-[#1a2b44]/50 transition-colors"
           >
             Training Tasks
           </TabsTrigger>
           <TabsTrigger
             value="predict"
-            className="text-[#64748B] hover:text-[#334155] data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00FFA3]/10 data-[state=active]:via-[#00E5FF]/10 data-[state=active]:to-[#A374FF]/10 data-[state=active]:text-[#334155] hover:bg-[#A374FF]/10 transition-colors"
+            className="text-gray-400 hover:text-gray-200 data-[state=active]:bg-[#1a2b44] data-[state=active]:text-gray-200 hover:bg-[#1a2b44]/50 transition-colors"
           >
             Prediction Tasks
           </TabsTrigger>
