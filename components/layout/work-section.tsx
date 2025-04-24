@@ -1,3 +1,4 @@
+"use client"
 import { motion } from "framer-motion"
 import { StepCard } from "./step-card"
 
@@ -26,10 +27,18 @@ export function HowItWorksSection() {
   }
 
   return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-4 md:px-6">
+    <section className="py-20 relative overflow-hidden">
+      {/* Dark gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#141425] to-[#0D0D15] z-0"></div>
+
+      {/* Animated gradient overlay */}
+      <div className="absolute inset-0 opacity-10 z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#6E2BFF]/0 via-[#00E5FF]/10 to-[#6E2BFF]/0 animate-pulse"></div>
+      </div>
+
+      <div className="container relative mx-auto px-4 md:px-6 z-10">
         <motion.h2
-          className="text-3xl font-bold text-center mb-12"
+          className="text-3xl font-bold text-center mb-12 text-white bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-300"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -50,6 +59,10 @@ export function HowItWorksSection() {
               number="01"
               title="Deploy Compute Task"
               description="Submit your computation requirements to our decentralized network"
+              className="bg-[#141425]/80 border border-[#00E5FF]/20 hover:border-[#00E5FF]/40 hover:shadow-[0_0_15px_rgba(0,229,255,0.2)]"
+              numberClassName="text-[#00E5FF]"
+              titleClassName="text-white"
+              descriptionClassName="text-gray-400"
             />
           </motion.div>
 
@@ -58,6 +71,10 @@ export function HowItWorksSection() {
               number="02"
               title="Run AI Models, ZK Tasks"
               description="Execute complex computations across our distributed infrastructure"
+              className="bg-[#141425]/80 border border-[#6E2BFF]/20 hover:border-[#6E2BFF]/40 hover:shadow-[0_0_15px_rgba(110,43,255,0.2)]"
+              numberClassName="text-[#6E2BFF]"
+              titleClassName="text-white"
+              descriptionClassName="text-gray-400"
             />
           </motion.div>
 
@@ -66,6 +83,10 @@ export function HowItWorksSection() {
               number="03"
               title="Stake $CNET & Earn Rewards"
               description="Participate in network security and earn rewards"
+              className="bg-[#141425]/80 border border-[#00E5FF]/20 hover:border-[#00E5FF]/40 hover:shadow-[0_0_15px_rgba(0,229,255,0.2)]"
+              numberClassName="text-[#00E5FF]"
+              titleClassName="text-white"
+              descriptionClassName="text-gray-400"
             />
           </motion.div>
         </motion.div>

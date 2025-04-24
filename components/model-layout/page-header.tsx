@@ -7,22 +7,22 @@ import { motion } from "framer-motion"
 
 export function PageHeader() {
   return (
-    <header className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-400 text-white pt-16 pb-24">
+    <header className="relative overflow-hidden bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 text-white pt-16 pb-24">
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply opacity-70 filter blur-3xl"></div>
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply opacity-70 filter blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-br from-blue-400/30 via-indigo-500/20 to-purple-500/30"></div>
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-purple-900 rounded-full mix-blend-multiply opacity-30 filter blur-3xl"></div>
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-900 rounded-full mix-blend-multiply opacity-30 filter blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-br from-slate-900/50 via-purple-900/20 to-slate-800/30"></div>
 
         {/* Grid pattern overlay */}
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center opacity-5"></div>
 
         {/* Animated particles */}
         <div className="absolute inset-0">
           {Array.from({ length: 20 }).map((_, i) => (
             <div
               key={i}
-              className="absolute rounded-full bg-white/30"
+              className="absolute rounded-full bg-white/10"
               style={{
                 top: `${Math.random() * 100}%`,
                 left: `${Math.random() * 100}%`,
@@ -40,7 +40,7 @@ export function PageHeader() {
         <div className="text-center max-w-4xl mx-auto">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-white drop-shadow-md">
-            CoreNet AI Model Warehouse
+              CoreNet AI Model Warehouse
             </h1>
           </motion.div>
 
@@ -49,7 +49,7 @@ export function PageHeader() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <p className="text-xl text-blue-100 mb-12 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
               Access thousands of AI models from the Hugging Face community
             </p>
           </motion.div>
@@ -126,7 +126,7 @@ export function PageHeader() {
 
       {/* Wave divider at bottom */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" fill="#ffffff" preserveAspectRatio="none">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" fill="#14141f" preserveAspectRatio="none">
           <path d="M0,32L60,42.7C120,53,240,75,360,74.7C480,75,600,53,720,42.7C840,32,960,32,1080,37.3C1200,43,1320,53,1380,58.7L1440,64L1440,100L1380,100C1320,100,1200,100,1080,100C960,100,840,100,720,100C600,100,480,100,360,100C240,100,120,100,60,100L0,100Z"></path>
         </svg>
       </div>
@@ -141,9 +141,9 @@ function StatItem({ value, label, icon }: { value: string; label: string; icon: 
       whileHover={{ scale: 1.05 }}
       transition={{ type: "spring", stiffness: 400, damping: 10 }}
     >
-      <div className="bg-white/20 rounded-full p-3 mb-3 backdrop-blur-sm">{icon}</div>
+      <div className="bg-white/10 rounded-full p-3 mb-3 backdrop-blur-sm">{icon}</div>
       <div className="text-4xl font-bold text-white">{value}</div>
-      <div className="text-sm text-blue-100 mt-1">{label}</div>
+      <div className="text-sm text-gray-300 mt-1">{label}</div>
     </motion.div>
   )
 }
